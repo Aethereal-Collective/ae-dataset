@@ -16,6 +16,6 @@ useSeoMeta({
 	ogDescription: description,
 	ogSiteName: "Aethereal Data",
 	ogType: "website",
-	themeColor: "#ffffff",
+	themeColor: "#0a0a0a",
 });
 </script>
