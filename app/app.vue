@@ -9,9 +9,9 @@
 </template>
 
 <script setup lang="ts">
-const description = "Free, ready-to-use datasets for crypto, blockchain, and stock market research, by Aethereal.";
+const description = "Free, ready-to-use financial datasets: stocks, FX, commodities, macro, and on-chain crypto, by Aethereal.";
 useSeoMeta({
-	titleTemplate: (t) => (t ? `${t} | Aethereal Data` : "Aethereal Data: Crypto, Blockchain & Stock Datasets"),
+	titleTemplate: (t) => (t ? `${t} | Aethereal Data` : "Aethereal Data: Stock, Crypto & Macro Datasets"),
 	description,
 	ogDescription: description,
 	ogSiteName: "Aethereal Data",

@@ -7,7 +7,6 @@
 			</NuxtLink>
 			<div class="flex items-center gap-1 font-mono text-xs text-neutral-400">
 				<NuxtLink to="/#datasets" class="rounded-md px-3 py-2 hover:bg-white/5 hover:text-white">datasets</NuxtLink>
-				<NuxtLink to="/stocks" class="rounded-md px-3 py-2 hover:bg-white/5 hover:text-white">stocks</NuxtLink>
 				<a href="https://aethereal.top" class="hidden rounded-md px-3 py-2 hover:bg-white/5 hover:text-white sm:inline">aethereal.top ↗</a>
 			</div>
 		</nav>

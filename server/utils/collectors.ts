@@ -1,10 +1,13 @@
+import * as chain from "./collectors-chain";
+import * as markets from "./collectors-markets";
+
 // One collector per dataset slug. Each returns plain rows matching the dataset's columns.
 type Row = Record<string, string | number | null>;
 
-const day = (unixSeconds: number) => new Date(unixSeconds * 1000).toISOString().slice(0, 10);
+export const day = (unixSeconds: number) => new Date(unixSeconds * 1000).toISOString().slice(0, 10);
 const today = () => new Date().toISOString().slice(0, 10);
 
-async function getJson<T>(url: string, init?: RequestInit): Promise<T> {
+export async function getJson<T>(url: string, init?: RequestInit): Promise<T> {
 	const res = await fetch(url, { ...init, signal: AbortSignal.timeout(30_000) });
 	if (!res.ok) throw new Error(`${url}: HTTP ${res.status}`);
 	return res.json() as Promise<T>;
@@ -12,7 +15,7 @@ async function getJson<T>(url: string, init?: RequestInit): Promise<T> {
 
 // --- On-chain stablecoin supply -------------------------------------------------------------
 
-const RPC: Record<string, string> = {
+export const RPC: Record<string, string> = {
 	ethereum: "https://ethereum-rpc.publicnode.com",
 	base: "https://base-rpc.publicnode.com",
 	arbitrum: "https://arbitrum-one-rpc.publicnode.com",
@@ -31,7 +34,7 @@ const STABLECOINS: [chain: string, token: string, contract: string][] = [
 	["polygon", "USDC", "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359"],
 ];
 
-async function ethCall(chain: string, to: string, data: string): Promise<string> {
+export async function ethCall(chain: string, to: string, data: string): Promise<string> {
 	const j = await getJson<{ result?: string; error?: { message: string } }>(RPC[chain]!, {
 		method: "POST",
 		headers: { "content-type": "application/json" },
@@ -260,4 +263,27 @@ export const COLLECTORS: Record<string, () => Promise<Row[]>> = {
 	"yield-pools": yieldPools,
 	"dex-volume-history": dexVolumeHistory,
 	"cex-reserves": cexReserves,
+	"bitcoin-network-daily": chain.bitcoinNetworkDaily,
+	"bitcoin-difficulty-adjustments": chain.bitcoinDifficultyAdjustments,
+	"bitcoin-mining-pools": chain.bitcoinMiningPools,
+	"lightning-network-history": chain.lightningNetworkHistory,
+	"l2-daily-metrics": chain.l2DailyMetrics,
+	"l2-projects": chain.l2Projects,
+	"evm-gas-daily": chain.evmGasDaily,
+	"solana-throughput-daily": chain.solanaThroughputDaily,
+	"protocol-fees": chain.protocolFees,
+	"dex-protocols": chain.dexProtocols,
+	"defi-fees-volume-history": chain.defiFeesVolumeHistory,
+	"stablecoins-by-chain": chain.stablecoinsByChain,
+	"lending-markets": chain.lendingMarkets,
+	"idx-stock-prices": markets.idxStockPrices,
+	"sp500-stock-prices": markets.sp500StockPrices,
+	"sp500-companies": markets.sp500Companies,
+	"global-indices": markets.globalIndices,
+	"commodity-prices": markets.commodityPrices,
+	"fx-rates": markets.fxRates,
+	"crypto-prices": markets.cryptoPrices,
+	"us-rates-daily": markets.usRatesDaily,
+	"us-macro-monthly": markets.usMacroMonthly,
+	"world-macro-annual": markets.worldMacroAnnual,
 };

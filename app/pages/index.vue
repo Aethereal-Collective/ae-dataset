@@ -3,12 +3,12 @@
 		<section class="grid-bg relative overflow-hidden border-b border-white/10">
 			<div class="mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 md:py-24 lg:grid-cols-[0.9fr_1.1fr]">
 				<div>
-					<p class="font-mono text-xs text-accent">// crypto datasets, refreshed daily</p>
+					<p class="font-mono text-xs text-accent">// financial datasets, refreshed daily</p>
 					<h1 class="mt-5 text-5xl font-extrabold leading-[0.95] tracking-[-0.035em] md:text-6xl">
 						Stop scraping.<br />
 						<span class="text-neutral-500">Start analyzing.</span>
 					</h1>
-					<p class="mt-6 max-w-md text-lg text-neutral-400">Stablecoins, DeFi, exchanges, and hacks as clean CSV and Parquet. One URL away from your notebook.</p>
+					<p class="mt-6 max-w-md text-lg text-neutral-400">Stocks, FX, macro, and on-chain crypto data as clean CSV and Parquet. One URL away from your notebook.</p>
 
 					<label class="mt-8 flex max-w-md items-center gap-3 rounded-lg border border-white/15 bg-black/60 px-4 py-3.5 font-mono text-sm focus-within:border-accent">
 						<span class="text-accent" aria-hidden="true">&gt;</span>
@@ -98,7 +98,7 @@
 				<p class="font-mono text-xs text-accent">// look inside</p>
 				<h2 class="mt-2 text-3xl font-extrabold tracking-tight">See the rows before you download.</h2>
 				<div class="mt-10 grid gap-6 lg:grid-cols-[320px_1fr]">
-					<div class="flex flex-col">
+					<div class="flex max-h-[480px] flex-col overflow-y-auto">
 						<button
 							v-for="d in data"
 							:key="d.slug"
@@ -168,24 +168,50 @@ import { TOPICS, type Topic } from "#shared/datasets";
 
 const { data } = await useFetch("/api/datasets", { default: () => [] });
 
-const TOPIC_COLOR: Record<Topic, string> = { stablecoins: "#b5f23d", defi: "#7dd3fc", exchanges: "#fbbf24", security: "#f87171" };
+const TOPIC_COLOR: Record<Topic, string> = {
+	stocks: "#34d399",
+	markets: "#60a5fa",
+	macro: "#e879f9",
+	bitcoin: "#fb923c",
+	networks: "#a78bfa",
+	stablecoins: "#b5f23d",
+	defi: "#7dd3fc",
+	exchanges: "#fbbf24",
+	security: "#f87171",
+};
 // Monthly or ranked series read better as bars.
-const BARS = new Set(["stablecoin-supply-onchain", "crypto-hacks", "dex-volume-history", "stablecoin-market", "defi-protocols", "yield-pools", "cex-reserves"]);
+const BARS = new Set([
+	"stablecoin-supply-onchain",
+	"crypto-hacks",
+	"dex-volume-history",
+	"stablecoin-market",
+	"defi-protocols",
+	"yield-pools",
+	"cex-reserves",
+	"bitcoin-mining-pools",
+	"l2-projects",
+	"l2-daily-metrics",
+	"protocol-fees",
+	"dex-protocols",
+	"stablecoins-by-chain",
+	"lending-markets",
+	"sp500-companies",
+]);
 
-const PANELS = ["stablecoin-market-cap-history", "dex-volume-history", "crypto-hacks"];
+const PANELS = ["global-indices", "bitcoin-network-daily", "us-rates-daily"];
 const panels = computed(() =>
 	PANELS.map((slug) => data.value.find((d) => d.slug === slug))
 		.filter((d) => d?.insight)
 		.map((d) => ({ ...d!, insight: d!.insight!, bars: BARS.has(d!.slug) })),
 );
 
-const rowsOf = (slug: string) => data.value.find((d) => d.slug === slug)?.stats?.rows ?? 0;
+const insightOf = (slug: string) => data.value.find((d) => d.slug === slug)?.insight?.figure.value ?? 0;
 const stats = computed(() => [
 	{ label: "Datasets", value: data.value.length },
 	{ label: "Rows", value: formatCompact(data.value.reduce((s, d) => s + (d.stats?.rows ?? 0), 0)) },
-	{ label: "DeFi protocols", value: formatCompact(rowsOf("defi-protocols")) },
-	{ label: "Yield pools", value: formatCompact(rowsOf("yield-pools")) },
-	{ label: "History since", value: "2011" },
+	{ label: "Topics", value: Object.keys(TOPICS).length },
+	{ label: "Stocks", value: (insightOf("idx-stock-prices") + insightOf("sp500-stock-prices")).toLocaleString("en-US") },
+	{ label: "History since", value: "1954" },
 ]);
 
 const query = ref("");
