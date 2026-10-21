@@ -24,6 +24,18 @@ const distinct = (rows: Row[], key: string) => new Set(rows.map((r) => r[key])).
 const last = (xs: number[]) => xs.at(-1) ?? 0;
 const is = (key: string, v: string) => (r: Row) => r[key] === v;
 
+// Share of names above their 200-day average each day: market breadth.
+const breadth = (rows: Row[], label: string): Summary => {
+	const m = new Map<string, [number, number]>();
+	for (const r of rows) {
+		if (r.sma_200 == null) continue;
+		const [up, n] = m.get(String(r.date)) ?? [0, 0];
+		m.set(String(r.date), [up + (Number(r.close) > Number(r.sma_200) ? 1 : 0), n + 1]);
+	}
+	const s = [...m.entries()].sort(([a], [b]) => a.localeCompare(b)).slice(-250).map(([, [up, n]]) => (up / n) * 100);
+	return { spark: s, figure: { label, value: Math.round(last(s) * 10) / 10, unit: "pct" } };
+};
+
 const SUMMARIES: Record<string, (rows: Row[]) => Summary> = {
 	"stablecoin-supply-onchain": (rows) => {
 		const daily = sumBy(rows, (r) => String(r.date), "total_supply");
@@ -122,6 +134,27 @@ const SUMMARIES: Record<string, (rows: Row[]) => Summary> = {
 		return { spark: s, figure: { label: "US unemployment rate", value: last(s), unit: "pct" } };
 	},
 	"world-macro-annual": (rows) => ({ spark: series(rows, "gdp_usd", 40, is("iso3", "IDN")), figure: { label: "Countries and regions", value: distinct(rows, "iso3"), unit: "count" } }),
+	"cross-asset-daily": (rows) => ({ spark: series(rows, "btc", 365), figure: { label: "Assets and macro series, one calendar", value: 14, unit: "count" } }),
+	"idx-stock-features": (rows) => breadth(rows, "IDX stocks above their 200-day average"),
+	"crypto-features": (rows) => breadth(rows, "Coins above their 200-day average"),
+	"defi-protocol-status": (rows) => {
+		const gone = rows.filter((r) => r.status !== "active" && r.status !== "website_down");
+		const byYear = sumBy(gone.filter((r) => r.dead_date).map((r) => ({ ...r, n: 1 })), (r) => String(r.dead_date).slice(0, 4), "n");
+		return { spark: byYear.map(([, v]) => v), figure: { label: "Protocols dead, rugged, or deprecated", value: gone.length, unit: "count" } };
+	},
+	"hacks-enriched": (rows) => {
+		const yearly = sumBy(rows, (r) => String(r.year), "amount_usd_real");
+		return { spark: yearly.map(([, v]) => v), figure: { label: "Lost to hacks, in today's dollars", value: total(rows, "amount_usd_real"), unit: "usd" } };
+	},
+	"stablecoin-flows-by-chain": (rows) => {
+		const daily = sumBy(rows, (r) => String(r.date), "flow_1d_usd").slice(-180);
+		const latest = rows.filter((r) => r.date === rows.at(-1)?.date);
+		return { spark: daily.map(([, v]) => v), figure: { label: "Stablecoin net inflow, last 30 days", value: total(latest, "flow_30d_usd"), unit: "usd" } };
+	},
+	"phishing-domains-labeled": (rows) => {
+		const hist = Array.from({ length: 5 }, (_, d) => rows.filter((r) => r.label === "phishing" && r.brand_distance === d).length);
+		return { spark: hist, figure: { label: "Phishing domains labeled", value: rows.filter((r) => r.label === "phishing").length, unit: "count" } };
+	},
 };
 
 export const summarize = (slug: string, rows: Row[]): Summary | null => (rows.length && SUMMARIES[slug] ? SUMMARIES[slug]!(rows) : null);

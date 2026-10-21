@@ -169,6 +169,7 @@ import { TOPICS, type Topic } from "#shared/datasets";
 const { data } = await useFetch("/api/datasets", { default: () => [] });
 
 const TOPIC_COLOR: Record<Topic, string> = {
+	research: "#f5f5f5",
 	stocks: "#34d399",
 	markets: "#60a5fa",
 	macro: "#e879f9",
@@ -196,6 +197,9 @@ const BARS = new Set([
 	"stablecoins-by-chain",
 	"lending-markets",
 	"sp500-companies",
+	"defi-protocol-status",
+	"hacks-enriched",
+	"phishing-domains-labeled",
 ]);
 
 const PANELS = ["global-indices", "bitcoin-network-daily", "us-rates-daily"];
@@ -235,7 +239,7 @@ const pick = (t: Topic) => {
 	scrollToList();
 };
 
-const peek = ref("defi-protocols");
+const peek = ref("cross-asset-daily");
 const { data: preview } = await useFetch(() => `/api/datasets/${peek.value}`, { lazy: true, server: false });
 const previewCols = computed(() => (preview.value?.columns ?? []).map((c) => c.name).filter((c) => c !== "source" && c !== "pool_id" && c !== "contract"));
 const cell = (v: unknown) => (typeof v === "number" ? (Number.isInteger(v) ? formatNumber(v) : v.toFixed(2)) : (v ?? ""));

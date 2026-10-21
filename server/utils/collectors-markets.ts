@@ -57,7 +57,7 @@ const stock = (r: Awaited<ReturnType<typeof daily>>[number], ticker: string) => 
 const quote = (r: Awaited<ReturnType<typeof daily>>[number], symbol: string, name: string) => ({ date: r.date, symbol, name, open: r.open, high: r.high, low: r.low, close: r.close, volume: r.volume || null });
 
 // ponytail: hand-kept list of the most traded IDX names (idx.co.id blocks scripted access). Extend as needed.
-const IDX = "BBCA BBRI BMRI BBNI BRIS BBTN ARTO BNGA NISP PNBN MEGA BDMN BJBR BJTM AGRO TLKM ISAT EXCL TOWR MTEL TBIG ASII UNTR AUTO SMSM ICBP INDF MYOR UNVR KLBF SIDO GGRM HMSP CPIN JPFA MAIN ULTJ CMRY AMRT MIDI ACES MAPI MAPA ERAA LPPF RALS ADRO AADI PTBA ITMG HRUM INDY BUMI MEDC PGAS AKRA ELSA ENRG BYAN GEMS DOID TOBA ANTM INCO MDKA TINS NCKL MBMA BRMS PSAB AMMN SMGR INTP WIKA PTPP ADHI WSKT JSMR BSDE PWON CTRA SMRA ASRI LPKR DMAS EMTK BUKA GOTO SCMA MNCN BMTR TPIA BRPT INKP TKIM ESSA PGEO BREN CUAN HEAL MIKA SILO AALI LSIP SSMS DSNG TAPG SRTG PNLF MSIN BFIN ADMF SRIL WIFI DEWA RAJA";
+export const IDX = "BBCA BBRI BMRI BBNI BRIS BBTN ARTO BNGA NISP PNBN MEGA BDMN BJBR BJTM AGRO TLKM ISAT EXCL TOWR MTEL TBIG ASII UNTR AUTO SMSM ICBP INDF MYOR UNVR KLBF SIDO GGRM HMSP CPIN JPFA MAIN ULTJ CMRY AMRT MIDI ACES MAPI MAPA ERAA LPPF RALS ADRO AADI PTBA ITMG HRUM INDY BUMI MEDC PGAS AKRA ELSA ENRG BYAN GEMS DOID TOBA ANTM INCO MDKA TINS NCKL MBMA BRMS PSAB AMMN SMGR INTP WIKA PTPP ADHI WSKT JSMR BSDE PWON CTRA SMRA ASRI LPKR DMAS EMTK BUKA GOTO SCMA MNCN BMTR TPIA BRPT INKP TKIM ESSA PGEO BREN CUAN HEAL MIKA SILO AALI LSIP SSMS DSNG TAPG SRTG PNLF MSIN BFIN ADMF SRIL WIFI DEWA RAJA";
 
 export const idxStockPrices = () =>
 	collect(
@@ -113,7 +113,7 @@ const FX: [string, string][] = [
 ];
 export const fxRates = async () => (await collect(FX, "2000-01-01", quote)).map(({ volume: _, ...r }) => r);
 
-const CRYPTO: [string, string][] = [
+export const CRYPTO: [string, string][] = [
 	["BTC-USD", "Bitcoin"], ["ETH-USD", "Ethereum"], ["BNB-USD", "BNB"], ["SOL-USD", "Solana"], ["XRP-USD", "XRP"], ["DOGE-USD", "Dogecoin"], ["ADA-USD", "Cardano"], ["TRX-USD", "TRON"],
 	["AVAX-USD", "Avalanche"], ["LINK-USD", "Chainlink"], ["DOT-USD", "Polkadot"], ["LTC-USD", "Litecoin"], ["BCH-USD", "Bitcoin Cash"], ["XLM-USD", "Stellar"], ["UNI7083-USD", "Uniswap"],
 	["ATOM-USD", "Cosmos"], ["XMR-USD", "Monero"], ["ETC-USD", "Ethereum Classic"], ["NEAR-USD", "NEAR"], ["HBAR-USD", "Hedera"], ["FIL-USD", "Filecoin"], ["AAVE-USD", "Aave"], ["ALGO-USD", "Algorand"],

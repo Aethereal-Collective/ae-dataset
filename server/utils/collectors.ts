@@ -1,4 +1,5 @@
 import * as chain from "./collectors-chain";
+import * as derived from "./collectors-derived";
 import * as markets from "./collectors-markets";
 
 // One collector per dataset slug. Each returns plain rows matching the dataset's columns.
@@ -286,4 +287,11 @@ export const COLLECTORS: Record<string, () => Promise<Row[]>> = {
 	"us-rates-daily": markets.usRatesDaily,
 	"us-macro-monthly": markets.usMacroMonthly,
 	"world-macro-annual": markets.worldMacroAnnual,
+	"cross-asset-daily": derived.crossAssetDaily,
+	"idx-stock-features": derived.idxStockFeatures,
+	"crypto-features": derived.cryptoFeatures,
+	"defi-protocol-status": derived.defiProtocolStatus,
+	"hacks-enriched": derived.hacksEnriched,
+	"stablecoin-flows-by-chain": derived.stablecoinFlowsByChain,
+	"phishing-domains-labeled": derived.phishingDomainsLabeled,
 };
