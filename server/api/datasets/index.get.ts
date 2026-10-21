@@ -1,7 +1,7 @@
 import { DATASETS } from "../../../shared/datasets";
 
 export default defineEventHandler(() =>
-	DATASETS.map((d) => {
+	DATASETS.filter(isListed).map((d) => {
 		const stats = readStats(d.slug);
 		return { ...d, stats, insight: stats?.insight ?? null };
 	}),

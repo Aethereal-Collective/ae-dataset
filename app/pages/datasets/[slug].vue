@@ -3,7 +3,7 @@
 		<nav class="text-sm text-neutral-400" aria-label="Breadcrumb">
 			<NuxtLink to="/" class="hover:text-white">Datasets</NuxtLink>
 			<span class="mx-2">/</span>
-			<span>{{ TOPICS[d.topic] }}</span>
+			<NuxtLink :to="`/topics/${d.topic}`" class="hover:text-white">{{ TOPICS[d.topic] }}</NuxtLink>
 		</nav>
 
 		<header class="mt-5 grid gap-8 lg:grid-cols-[1fr_320px]">
@@ -24,6 +24,7 @@
 				<p v-else class="rounded-lg bg-white/5 p-4 text-neutral-400">This dataset is being built. Check back in a few minutes.</p>
 				<dl class="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-neutral-400">
 					<dt>Rows</dt><dd class="text-white">{{ d.stats ? formatNumber(d.stats.rows) : "-" }}</dd>
+					<template v-if="d.stats?.firstDate"><dt>Coverage</dt><dd class="text-white">{{ d.stats.firstDate }} to {{ d.stats.lastDate }}</dd></template>
 					<dt>Updated</dt><dd class="text-white">{{ d.stats ? formatDate(d.stats.updatedAt) : "-" }}</dd>
 					<dt>Schedule</dt><dd class="text-white">{{ d.schedule }}</dd>
 					<dt>License</dt><dd class="text-white">{{ d.license }}</dd>
@@ -51,6 +52,16 @@
 						</tr>
 					</tbody>
 				</table>
+			</div>
+		</section>
+
+		<section v-if="related.length" class="mt-14">
+			<h2 class="text-2xl font-extrabold tracking-tight">More {{ TOPICS[d.topic] }} datasets</h2>
+			<div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+				<NuxtLink v-for="r in related" :key="r.slug" :to="`/datasets/${r.slug}`" class="group rounded-xl border border-white/10 p-4 hover:border-white/25">
+					<h3 class="font-semibold group-hover:text-accent">{{ r.title }}</h3>
+					<p class="mt-1 line-clamp-2 text-sm text-neutral-500">{{ r.summary }}</p>
+				</NuxtLink>
 			</div>
 		</section>
 
@@ -85,5 +96,55 @@ const snippet = computed(() => {
 	return `import pandas as pd\n\ndf = pd.read_csv("${base}/files/${d.value!.slug}.csv")\n# or, faster for large files (needs pyarrow):\n# df = pd.read_parquet("${base}/files/${d.value!.slug}.parquet")\n\nprint(df.head())`;
 });
 
-useSeoMeta({ title: d.value.title, description: d.value.summary, ogDescription: d.value.summary });
+const site = useRuntimeConfig().public.siteUrl;
+const url = `${site}/datasets/${d.value.slug}`;
+const { data: all } = await useFetch("/api/datasets", { default: () => [] });
+const related = computed(() => all.value.filter((x) => x.topic === d.value!.topic && x.slug !== d.value!.slug).slice(0, 6));
+const description = `${d.value.summary} Free CSV and Parquet download, updated daily.`;
+useSeoMeta({
+	title: `${d.value.title} Dataset (CSV, Parquet)`,
+	description,
+	ogTitle: `${d.value.title} Dataset`,
+	ogDescription: description,
+	ogUrl: url,
+	robots: d.value.listed ? "index, follow" : "noindex, follow",
+});
+useHead({
+	link: [{ rel: "canonical", href: url }],
+	script: [
+		{
+			type: "application/ld+json",
+			innerHTML: JSON.stringify([
+				{
+				"@context": "https://schema.org",
+				"@type": "Dataset",
+				name: d.value.title,
+				description: d.value.description,
+				url,
+				license: d.value.license,
+				isAccessibleForFree: true,
+				keywords: [TOPICS[d.value.topic], "dataset", "csv", "parquet", ...d.value.columns.map((c) => c.name)],
+				creator: { "@type": "Organization", name: "Aethereal", url: "https://aethereal.top" },
+				dateModified: d.value.stats?.updatedAt,
+				temporalCoverage: d.value.stats?.firstDate ? `${d.value.stats.firstDate}/${d.value.stats.lastDate}` : undefined,
+				includedInDataCatalog: { "@type": "DataCatalog", name: "Aethereal Data", url: site },
+				variableMeasured: d.value.columns.map((c) => ({ "@type": "PropertyValue", name: c.name, description: c.description })),
+				distribution: [
+					{ "@type": "DataDownload", encodingFormat: "text/csv", contentUrl: `${site}/files/${d.value.slug}.csv` },
+					{ "@type": "DataDownload", encodingFormat: "application/vnd.apache.parquet", contentUrl: `${site}/files/${d.value.slug}.parquet` },
+				],
+				},
+				{
+					"@context": "https://schema.org",
+					"@type": "BreadcrumbList",
+					itemListElement: [
+						{ "@type": "ListItem", position: 1, name: "Datasets", item: site },
+						{ "@type": "ListItem", position: 2, name: TOPICS[d.value.topic], item: `${site}/topics/${d.value.topic}` },
+						{ "@type": "ListItem", position: 3, name: d.value.title, item: url },
+					],
+				},
+			]),
+		},
+	],
+});
 </script>

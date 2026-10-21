@@ -47,7 +47,7 @@ const SOCIAL = [
 
 type Link = { label: string; to?: string; href?: string };
 const COLUMNS: { title: string; links: Link[] }[] = [
-	{ title: "Datasets", links: (Object.keys(TOPICS) as Topic[]).slice(0, 6).map((t) => ({ label: TOPICS[t], to: `/?topic=${t}#datasets` })) },
+	{ title: "Datasets", links: (Object.keys(TOPICS) as Topic[]).map((t) => ({ label: TOPICS[t], to: `/topics/${t}` })) },
 	{
 		title: "Use the data",
 		links: [

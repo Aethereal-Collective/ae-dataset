@@ -3,11 +3,11 @@
 		<section class="grid-bg relative overflow-hidden border-b border-white/10">
 			<div class="mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 md:py-24 lg:grid-cols-[0.9fr_1.1fr]">
 				<div>
-					<p class="font-mono text-xs text-accent">// financial datasets, refreshed daily</p>
-					<h1 class="mt-5 text-5xl font-extrabold leading-[0.95] tracking-[-0.035em] md:text-6xl">
+					<h1 class="font-mono text-xs text-accent">// free financial datasets: stocks, crypto, and macro</h1>
+					<p class="mt-5 text-5xl font-extrabold leading-[0.95] tracking-[-0.035em] md:text-6xl">
 						Stop scraping.<br />
 						<span class="text-neutral-500">Start analyzing.</span>
-					</h1>
+					</p>
 					<p class="mt-6 max-w-md text-lg text-neutral-400">Stocks, FX, macro, and on-chain crypto data as clean CSV and Parquet. One URL away from your notebook.</p>
 
 					<label class="mt-8 flex max-w-md items-center gap-3 rounded-lg border border-white/15 bg-black/60 px-4 py-3.5 font-mono text-sm focus-within:border-accent">
@@ -68,6 +68,7 @@
 					<h3 v-if="g.label" class="flex items-center gap-2 font-mono text-sm text-neutral-300">
 						<span class="size-2 rounded-full" :style="{ background: TOPIC_COLOR[g.id] }" />{{ g.label }}
 						<span class="text-neutral-600">{{ g.items.length }}</span>
+						<NuxtLink v-if="g.label" :to="`/topics/${g.id}`" class="ml-auto text-xs text-neutral-500 hover:text-white">all {{ g.label.toLowerCase() }} →</NuxtLink>
 					</h3>
 					<div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 						<NuxtLink v-for="d in g.items" :key="d.slug" :to="`/datasets/${d.slug}`" class="group overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] hover:border-white/25">
@@ -291,5 +292,27 @@ hacks = pd.read_csv(url, parse_dates=["date"])
 
 hacks.groupby("vector")["amount_usd_real"].sum()`;
 
-useSeoMeta({ title: "" });
+useSeoMeta({ title: "", ogUrl: useRuntimeConfig().public.siteUrl });
+const site = useRuntimeConfig().public.siteUrl;
+useHead({
+	link: [{ rel: "canonical", href: site }],
+	script: [
+		{
+			type: "application/ld+json",
+			innerHTML: JSON.stringify([
+				{ "@context": "https://schema.org", "@type": "Organization", name: "Aethereal", url: "https://aethereal.top", logo: `${site}/logo.jpg`, sameAs: ["https://x.com/aethereal_co", "https://github.com/Aethereal-Collective", "https://www.linkedin.com/company/aethereal-collective"] },
+				{ "@context": "https://schema.org", "@type": "WebSite", name: "Aethereal Data", url: site },
+				{
+					"@context": "https://schema.org",
+					"@type": "DataCatalog",
+					name: "Aethereal Data",
+					description: "Free financial datasets: stocks, indices, commodities, FX, macro, and on-chain crypto, refreshed daily.",
+					url: site,
+					creator: { "@type": "Organization", name: "Aethereal", url: "https://aethereal.top" },
+					dataset: data.value.map((d) => ({ "@type": "Dataset", name: d.title, description: d.summary, url: `${site}/datasets/${d.slug}` })),
+				},
+			]),
+		},
+	],
+});
 </script>

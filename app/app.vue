@@ -17,5 +17,10 @@ useSeoMeta({
 	ogSiteName: "Aethereal Data",
 	ogType: "website",
 	themeColor: "#0a0a0a",
+	ogImage: `${useRuntimeConfig().public.siteUrl}/og.png`,
+	ogImageWidth: 1200,
+	ogImageHeight: 630,
+	twitterCard: "summary_large_image",
+	twitterSite: "@aethereal_co",
 });
 </script>

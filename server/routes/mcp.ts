@@ -90,7 +90,7 @@ type Args = Record<string, any>;
 async function call(name: string, a: Args): Promise<unknown> {
 	switch (name) {
 		case "list_datasets":
-			return DATASETS.filter((d) => !a.topic || d.topic === a.topic).map((d) => {
+			return DATASETS.filter((d) => isListed(d) && (!a.topic || d.topic === a.topic)).map((d) => {
 				const s = readStats(d.slug);
 				return { slug: d.slug, title: d.title, topic: d.topic, summary: d.summary, enriched: !!d.enriched, rows: s?.rows ?? null, updated: s?.updatedAt ?? null };
 			});

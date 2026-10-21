@@ -16,9 +16,27 @@ export interface DatasetStats {
 	csvBytes: number;
 	parquetBytes: number;
 	insight: Summary | null;
+	/** Distinct dates covered, for datasets with a date column. */
+	days?: number;
+	/** First and last date (or year) covered. */
+	firstDate?: string;
+	lastDate?: string;
 }
 
 const PREVIEW_ROWS = 20;
+
+const coverage = (rows: Row[], key: string | null) => {
+	if (!key) return {};
+	let first: string | undefined;
+	let last: string | undefined;
+	for (const r of rows) {
+		const v = r[key] == null ? undefined : String(r[key]);
+		if (!v) continue;
+		if (!first || v < first) first = v;
+		if (!last || v > last) last = v;
+	}
+	return { firstDate: first, lastDate: last };
+};
 
 export const dataDir = () => resolve(process.env.DATA_DIR || ".data/datasets");
 const path = (slug: string, ext: string) => join(dataDir(), `${slug}.${ext}`);
@@ -30,6 +48,10 @@ const readRows = (slug: string) => readJson<Row[]>(path(slug, "json"), []);
 const readJson = <T>(f: string, fallback: T): T => (existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : fallback);
 
 export const readStats = (slug: string) => readJson<DatasetStats | null>(path(slug, "meta.json"), null);
+// Datasets we collect ourselves start empty; keep them out of listings until a month of history exists.
+const MIN_DAYS = 30;
+export const isListed = (meta: DatasetMeta) => meta.mode !== "append" || (readStats(meta.slug)?.days ?? 0) >= MIN_DAYS;
+
 export const readPreview = (slug: string) => readJson<Row[]>(path(slug, "preview.json"), []);
 
 export function saveDataset(meta: DatasetMeta, fresh: Row[]): DatasetStats {
@@ -62,6 +84,8 @@ export function saveDataset(meta: DatasetMeta, fresh: Row[]): DatasetStats {
 		csvBytes: statSync(path(meta.slug, "csv")).size,
 		parquetBytes: statSync(path(meta.slug, "parquet")).size,
 		insight: summarize(meta.slug, rows),
+		days: hasDate ? new Set(rows.map((r) => r.date)).size : undefined,
+		...coverage(rows, hasDate ? "date" : names.includes("year") ? "year" : null),
 	};
 	writeFileSync(path(meta.slug, "meta.json"), JSON.stringify(stats));
 	return stats;
