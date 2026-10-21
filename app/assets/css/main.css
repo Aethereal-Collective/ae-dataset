@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+	--font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+	--font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+body {
+	@apply bg-white text-neutral-950 antialiased;
+}
+
+/* Same chrome gradient as aethereal.top. */
+.chrome-text {
+	background: linear-gradient(180deg, #0a0a0a 0%, #3f3f46 45%, #a1a1aa 100%);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
