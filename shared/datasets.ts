@@ -13,6 +13,7 @@ export interface DatasetMeta {
 	summary: string;
 	description: string;
 	category: "crypto" | "blockchain";
+	/** Internal record of where the data comes from. Not shown on the site. */
 	source: { name: string; url: string };
 	license: string;
 	schedule: string;
@@ -29,7 +30,7 @@ export const DATASETS: DatasetMeta[] = [
 		title: "Stablecoin Supply (On-chain)",
 		summary: "Daily USDT and USDC total supply read directly from their contracts on five chains.",
 		description:
-			"Every day we call totalSupply() on the official USDT and USDC contracts on Ethereum, Base, Arbitrum, BNB Chain, and Polygon through public RPC nodes, and convert it to whole tokens using each contract's decimals(). History starts from the first day this dataset ran.",
+			"Daily total supply of USDT and USDC on Ethereum, Base, Arbitrum, BNB Chain, and Polygon, read from the official token contracts and converted to whole tokens. History starts from the first day this dataset ran.",
 		category: "blockchain",
 		source: { name: "Public RPC nodes (computed by Aethereal)", url: "https://publicnode.com" },
 		license: "CC BY 4.0. Free to use with attribution to Aethereal.",
@@ -50,15 +51,15 @@ export const DATASETS: DatasetMeta[] = [
 		title: "Chain TVL History",
 		summary: "Daily total value locked for the 25 largest chains, back to each chain's first day.",
 		description:
-			"Daily TVL in USD for the 25 chains with the highest TVL at refresh time, as reported by DefiLlama. TVL counts assets deposited in DeFi protocols on each chain.",
+			"Daily TVL in USD for the 25 chains with the highest TVL at refresh time. TVL counts assets deposited in DeFi protocols on each chain.",
 		category: "crypto",
 		source: { name: "DefiLlama", url: "https://defillama.com/chains" },
-		license: "Data by DefiLlama. Cite DefiLlama as the source.",
+		license: "Free for research and education.",
 		schedule: "Daily, 01:15 UTC",
 		mode: "replace",
 		columns: [
 			{ name: "date", type: "date", description: "Day (UTC)." },
-			{ name: "chain", type: "string", description: "Chain name as used by DefiLlama." },
+			{ name: "chain", type: "string", description: "Chain name." },
 			{ name: "tvl_usd", type: "number", description: "Total value locked in USD." },
 		],
 	},
@@ -67,10 +68,10 @@ export const DATASETS: DatasetMeta[] = [
 		title: "Crypto Hacks",
 		summary: "Every recorded crypto hack and exploit: date, protocol, technique, amount lost, chains.",
 		description:
-			"All hacks and exploits recorded by DefiLlama, from the earliest incidents to today, with the attack classification, technique, amount lost in USD, affected chains, and funds returned.",
+			"Recorded crypto hacks and exploits, from the earliest incidents to today, with the attack classification, technique, amount lost in USD, affected chains, and funds returned.",
 		category: "crypto",
 		source: { name: "DefiLlama", url: "https://defillama.com/hacks" },
-		license: "Data by DefiLlama. Cite DefiLlama as the source.",
+		license: "Free for research and education.",
 		schedule: "Daily, 01:15 UTC",
 		mode: "replace",
 		columns: [

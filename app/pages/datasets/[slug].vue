@@ -23,10 +23,9 @@
 				</template>
 				<p v-else class="rounded-2xl bg-white p-4 text-neutral-500">This dataset is being built. Check back in a few minutes.</p>
 				<dl class="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-neutral-500">
-					<dt>Rows</dt><dd class="text-neutral-950">{{ d.stats ? formatNumber(d.stats.rows) : "—" }}</dd>
-					<dt>Updated</dt><dd class="text-neutral-950">{{ d.stats ? formatDate(d.stats.updatedAt) : "—" }}</dd>
+					<dt>Rows</dt><dd class="text-neutral-950">{{ d.stats ? formatNumber(d.stats.rows) : "-" }}</dd>
+					<dt>Updated</dt><dd class="text-neutral-950">{{ d.stats ? formatDate(d.stats.updatedAt) : "-" }}</dd>
 					<dt>Schedule</dt><dd class="text-neutral-950">{{ d.schedule }}</dd>
-					<dt>Source</dt><dd><a :href="d.source.url" target="_blank" rel="noopener noreferrer" class="text-neutral-950 underline">{{ d.source.name }}</a></dd>
 					<dt>License</dt><dd class="text-neutral-950">{{ d.license }}</dd>
 				</dl>
 			</aside>
@@ -78,7 +77,7 @@ const route = useRoute();
 const { data: d } = await useFetch(`/api/datasets/${route.params.slug}`);
 if (!d.value) throw createError({ statusCode: 404, statusMessage: "Dataset not found", fatal: true });
 
-const cell = (v: unknown, type: string) => (v === null || v === undefined || v === "" ? "—" : type === "number" ? formatNumber(Number(v)) : String(v));
+const cell = (v: unknown, type: string) => (v === null || v === undefined || v === "" ? "-" : type === "number" ? formatNumber(Number(v)) : String(v));
 
 const snippet = computed(() => {
 	const base = useRuntimeConfig().public.siteUrl;
