@@ -220,7 +220,7 @@ export const DATASETS: DatasetMeta[] = [
 		slug: "phishing-domains-labeled",
 		title: "Crypto Phishing Domains",
 		summary: "Over 100,000 crypto phishing and legitimate domains, labeled, with lexical features and lookalike distance to real brands.",
-		description: "Crypto phishing domains and legitimate protocol domains with a label and features for classifiers: TLD, length, subdomains, hyphens, digits, character entropy, punycode, the nearest real brand, edit distance to it, and whether a brand name is embedded. Built from the threat data behind Halt.",
+		description: "Crypto phishing domains and legitimate protocol domains with a label and features for classifiers: TLD, length, subdomains, hyphens, digits, character entropy, punycode, the nearest real brand, edit distance to it, and whether a brand name is embedded.",
 		topic: "security",
 		enriched: true,
 		source: { name: "Aethereal (derived from public market and on-chain data)", url: "https://dataset.aethereal.top" },
