@@ -1,47 +1,53 @@
 <template>
 	<div>
 		<section class="grid-bg relative overflow-hidden border-b border-white/10">
-			<div class="mx-auto grid max-w-6xl items-center gap-12 px-4 py-20 md:py-28 lg:grid-cols-[1fr_1.1fr]">
+			<div class="mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 md:py-24 lg:grid-cols-[0.9fr_1.1fr]">
 				<div>
-					<p class="font-mono text-xs text-accent">// open crypto datasets, refreshed daily</p>
+					<p class="font-mono text-xs text-accent">// crypto datasets, refreshed daily</p>
 					<h1 class="mt-5 text-5xl font-extrabold leading-[0.95] tracking-[-0.035em] md:text-6xl">
 						Stop scraping.<br />
 						<span class="text-neutral-500">Start analyzing.</span>
 					</h1>
-					<p class="mt-6 max-w-md text-lg text-neutral-400">Clean blockchain and market data with documented columns. One URL away from your notebook.</p>
+					<p class="mt-6 max-w-md text-lg text-neutral-400">Stablecoins, DeFi, exchanges, and hacks as clean CSV and Parquet. One URL away from your notebook.</p>
 
 					<label class="mt-8 flex max-w-md items-center gap-3 rounded-lg border border-white/15 bg-black/60 px-4 py-3.5 font-mono text-sm focus-within:border-accent">
 						<span class="text-accent" aria-hidden="true">&gt;</span>
 						<input v-model="query" type="search" placeholder="search datasets…" class="w-full bg-transparent outline-none placeholder:text-neutral-600" @keydown.enter="scrollToList" />
 						<kbd class="rounded border border-white/15 px-1.5 text-[10px] text-neutral-500">enter</kbd>
 					</label>
+					<div class="mt-4 flex flex-wrap gap-2 font-mono text-xs">
+						<button v-for="(label, id) in TOPICS" :key="id" type="button" class="rounded-full border border-white/10 px-3 py-1.5 text-neutral-400 hover:border-white/30 hover:text-white" @click="pick(id)">
+							<span class="mr-1.5 inline-block size-1.5 rounded-full align-middle" :style="{ background: TOPIC_COLOR[id] }" />{{ label }}
+						</button>
+					</div>
 				</div>
 
-				<NuxtLink v-if="featured?.insight" :to="`/datasets/${featured.slug}`" class="group block rounded-xl border border-white/10 bg-black/50 p-5 backdrop-blur">
-					<div class="flex items-start justify-between gap-4 font-mono text-xs">
-						<div>
-							<p class="text-neutral-500">{{ featured.slug }}.csv</p>
-							<p class="mt-2 text-3xl font-semibold tracking-tight text-white">{{ money(featured.insight.figure.value) }}</p>
-							<p class="mt-1 text-neutral-400">{{ featured.insight.figure.label }}</p>
-						</div>
-						<span class="rounded border border-accent/40 px-2 py-1 text-accent">live</span>
+				<div class="overflow-hidden rounded-xl border border-white/10 bg-black/70 shadow-2xl shadow-black backdrop-blur">
+					<div class="flex items-center gap-1.5 border-b border-white/10 px-4 py-2.5" aria-hidden="true">
+						<span class="size-2.5 rounded-full bg-white/15" /><span class="size-2.5 rounded-full bg-white/15" /><span class="size-2.5 rounded-full bg-white/15" />
+						<span class="ml-3 font-mono text-[11px] text-neutral-500">overview</span>
+						<span class="ml-auto font-mono text-[11px] text-accent">● live</span>
 					</div>
-					<div class="mt-6 h-56 text-accent">
-						<Sparkline :points="featured.insight.spark" grid animate :width="2" />
+					<div class="grid grid-cols-2 gap-px bg-white/10">
+						<NuxtLink v-for="(p, i) in panels" :key="p.slug" :to="`/datasets/${p.slug}`" :class="i === 0 ? 'col-span-2' : ''" class="group bg-neutral-950 p-4 hover:bg-neutral-900">
+							<p class="truncate font-mono text-[11px] text-neutral-500">{{ p.insight.figure.label }}</p>
+							<p class="mt-1 text-xl font-semibold tracking-tight md:text-2xl">{{ figure(p.insight.figure) }}</p>
+							<div :class="i === 0 ? 'h-28' : 'h-14'" class="mt-3" :style="{ color: TOPIC_COLOR[p.topic] }">
+								<Sparkline :points="p.insight.spark" :bars="p.bars" :grid="i === 0" :animate="!p.bars" :width="i === 0 ? 2 : 1.5" />
+							</div>
+						</NuxtLink>
 					</div>
-					<p class="mt-4 flex justify-between font-mono text-[11px] text-neutral-500">
-						<span>last 365 days</span><span class="group-hover:text-white">open dataset →</span>
-					</p>
-				</NuxtLink>
+				</div>
 			</div>
 		</section>
 
-		<div class="overflow-hidden border-b border-white/10 bg-black py-3 font-mono text-xs" aria-label="Key figures">
-			<div class="ticker flex w-max gap-12 whitespace-nowrap">
-				<span v-for="(t, i) in [...ticker, ...ticker]" :key="i" :aria-hidden="i >= ticker.length">
-					<span class="text-neutral-500">{{ t.label }}</span> <span class="text-white">{{ t.value }}</span>
-				</span>
-			</div>
+		<div class="border-b border-white/10 bg-black">
+			<dl class="mx-auto grid max-w-6xl grid-cols-2 gap-px px-4 md:grid-cols-5">
+				<div v-for="s in stats" :key="s.label" class="py-6">
+					<dt class="font-mono text-[11px] uppercase tracking-wider text-neutral-500">{{ s.label }}</dt>
+					<dd class="mt-1 text-2xl font-semibold tracking-tight">{{ s.value }}</dd>
+				</div>
+			</dl>
 		</div>
 
 		<section id="datasets" class="scroll-mt-14 px-4 py-20">
@@ -51,31 +57,79 @@
 						<p class="font-mono text-xs text-accent">// catalog</p>
 						<h2 class="mt-2 text-3xl font-extrabold tracking-tight">Datasets</h2>
 					</div>
-					<nav class="flex gap-1 rounded-lg border border-white/10 p-1 font-mono text-xs" aria-label="Filter by category">
+					<nav class="flex flex-wrap gap-1 rounded-lg border border-white/10 p-1 font-mono text-xs" aria-label="Filter by topic">
 						<button v-for="tab in tabs" :key="tab.id" type="button" :class="active === tab.id ? 'bg-white text-neutral-950' : 'text-neutral-400 hover:text-white'" class="rounded-md px-3 py-1.5" @click="active = tab.id">
 							{{ tab.label }} {{ tab.count }}
 						</button>
 					</nav>
 				</div>
 
-				<div class="mt-8 overflow-hidden rounded-xl border border-white/10">
-					<div class="hidden grid-cols-[1.6fr_0.6fr_0.7fr_0.8fr_1fr] gap-4 border-b border-white/10 bg-white/[0.03] px-5 py-3 font-mono text-[11px] uppercase tracking-wider text-neutral-500 md:grid">
-						<span>Dataset</span><span>Type</span><span class="text-right">Rows</span><span>Updated</span><span>Trend</span>
+				<div v-for="g in groups" :key="g.id" class="mt-12 first:mt-8">
+					<h3 v-if="g.label" class="flex items-center gap-2 font-mono text-sm text-neutral-300">
+						<span class="size-2 rounded-full" :style="{ background: TOPIC_COLOR[g.id] }" />{{ g.label }}
+						<span class="text-neutral-600">{{ g.items.length }}</span>
+					</h3>
+					<div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+						<NuxtLink v-for="d in g.items" :key="d.slug" :to="`/datasets/${d.slug}`" class="group overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] hover:border-white/25">
+							<div class="grid-bg relative h-32 border-b border-white/10 px-4 pt-6" :style="{ color: TOPIC_COLOR[d.topic], backgroundColor: `color-mix(in srgb, ${TOPIC_COLOR[d.topic]} 7%, transparent)` }">
+								<Sparkline v-if="d.insight && d.insight.spark.length > 2" :points="d.insight.spark" :bars="BARS.has(d.slug)" />
+								<p v-else class="font-mono text-[11px] text-neutral-500">collecting history</p>
+								<span class="absolute right-3 top-3 rounded bg-black/60 px-1.5 py-0.5 font-mono text-[10px] text-neutral-300">{{ d.mode === "append" ? "history" : d.columns.some((c) => c.name === "date") ? "time series" : "snapshot" }}</span>
+							</div>
+							<div class="p-4">
+								<h4 class="font-semibold group-hover:text-accent">{{ d.title }}</h4>
+								<p class="mt-1 line-clamp-2 text-sm text-neutral-500">{{ d.summary }}</p>
+								<p class="mt-4 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11px] text-neutral-500">
+									<span>{{ d.stats ? formatCompact(d.stats.rows) + " rows" : "building" }}</span>
+									<span>{{ d.columns.length }} cols</span>
+									<span v-if="d.stats">{{ formatBytes(d.stats.parquetBytes) }}</span>
+									<span v-if="d.stats">{{ ago(d.stats.updatedAt) }}</span>
+								</p>
+							</div>
+						</NuxtLink>
 					</div>
-					<NuxtLink v-for="d in shown" :key="d.slug" :to="`/datasets/${d.slug}`" class="group grid gap-3 border-b border-white/10 px-5 py-5 last:border-b-0 hover:bg-white/[0.03] md:grid-cols-[1.6fr_0.6fr_0.7fr_0.8fr_1fr] md:items-center md:gap-4">
-						<div>
-							<h3 class="font-semibold group-hover:text-accent">{{ d.title }}</h3>
-							<p class="mt-1 text-sm text-neutral-500">{{ d.summary }}</p>
+				</div>
+				<p v-if="!shown.length" class="mt-8 rounded-xl border border-white/10 px-5 py-10 text-center font-mono text-sm text-neutral-500">no dataset matches "{{ query }}"</p>
+			</div>
+		</section>
+
+		<section class="border-t border-white/10 px-4 py-20">
+			<div class="mx-auto max-w-6xl">
+				<p class="font-mono text-xs text-accent">// look inside</p>
+				<h2 class="mt-2 text-3xl font-extrabold tracking-tight">See the rows before you download.</h2>
+				<div class="mt-10 grid gap-6 lg:grid-cols-[320px_1fr]">
+					<div class="flex flex-col">
+						<button
+							v-for="d in data"
+							:key="d.slug"
+							type="button"
+							:class="peek === d.slug ? 'border-accent text-white' : 'border-white/10 text-neutral-400 hover:text-white'"
+							class="border-l-2 px-4 py-3 text-left"
+							@click="peek = d.slug"
+						>
+							<span class="font-semibold">{{ d.title }}</span>
+							<span v-if="peek === d.slug" class="mt-1 block text-sm text-neutral-500">{{ d.summary }}</span>
+						</button>
+					</div>
+					<div class="min-w-0 overflow-hidden rounded-xl border border-white/10 bg-black">
+						<div class="flex items-center justify-between border-b border-white/10 px-4 py-2.5 font-mono text-[11px] text-neutral-500">
+							<span>{{ peek }}.csv</span>
+							<NuxtLink :to="`/datasets/${peek}`" class="hover:text-white">open dataset →</NuxtLink>
 						</div>
-						<span class="font-mono text-xs text-neutral-400">{{ CATEGORY_LABEL[d.category]?.toLowerCase() }}</span>
-						<span class="font-mono text-sm md:text-right">{{ d.stats ? formatNumber(d.stats.rows) : "building" }}</span>
-						<span class="font-mono text-xs text-neutral-400">{{ d.stats ? formatDate(d.stats.updatedAt) : "-" }}</span>
-						<div class="h-10 text-accent">
-							<Sparkline v-if="d.insight && d.insight.spark.length > 2" :points="d.insight.spark" />
-							<span v-else class="flex h-full items-center font-mono text-[11px] text-neutral-600">collecting history</span>
+						<div class="max-h-[420px] overflow-auto">
+							<table v-if="preview?.preview.length" class="w-full whitespace-nowrap text-left font-mono text-xs">
+								<thead class="sticky top-0 bg-neutral-900 text-neutral-400">
+									<tr><th v-for="c in previewCols" :key="c" class="px-3 py-2 font-medium">{{ c }}</th></tr>
+								</thead>
+								<tbody class="divide-y divide-white/5 text-neutral-300">
+									<tr v-for="(r, i) in preview.preview.slice(0, 12)" :key="i">
+										<td v-for="c in previewCols" :key="c" class="max-w-[220px] truncate px-3 py-2" :class="typeof r[c] === 'number' ? 'text-right' : ''">{{ cell(r[c]) }}</td>
+									</tr>
+								</tbody>
+							</table>
+							<p v-else class="p-10 text-center font-mono text-sm text-neutral-500">loading…</p>
 						</div>
-					</NuxtLink>
-					<p v-if="!shown.length" class="px-5 py-10 text-center font-mono text-sm text-neutral-500">no dataset matches "{{ query }}"</p>
+					</div>
 				</div>
 			</div>
 		</section>
@@ -96,34 +150,75 @@
 				</div>
 			</div>
 		</section>
+
+		<section class="px-4 pb-20">
+			<div class="grid-bg mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 rounded-xl border border-white/10 p-8 md:flex-row md:items-center md:p-10">
+				<div>
+					<h2 class="text-2xl font-extrabold tracking-tight">Need a dataset we don't have?</h2>
+					<p class="mt-2 text-neutral-400">Tell us what you're analyzing. Popular requests get built first.</p>
+				</div>
+				<a href="mailto:team@aethereal.top?subject=Dataset%20request" class="shrink-0 rounded-lg bg-accent px-5 py-3 font-semibold text-neutral-950 hover:brightness-110">Request a dataset</a>
+			</div>
+		</section>
 	</div>
 </template>
 
 <script setup lang="ts">
+import { TOPICS, type Topic } from "#shared/datasets";
+
 const { data } = await useFetch("/api/datasets", { default: () => [] });
 
-const FEATURED = "chain-tvl-history";
-const featured = computed(() => data.value.find((d) => d.slug === FEATURED));
+const TOPIC_COLOR: Record<Topic, string> = { stablecoins: "#b5f23d", defi: "#7dd3fc", exchanges: "#fbbf24", security: "#f87171" };
+// Monthly or ranked series read better as bars.
+const BARS = new Set(["stablecoin-supply-onchain", "crypto-hacks", "dex-volume-history", "stablecoin-market", "defi-protocols", "yield-pools", "cex-reserves"]);
+
+const PANELS = ["stablecoin-market-cap-history", "dex-volume-history", "crypto-hacks"];
+const panels = computed(() =>
+	PANELS.map((slug) => data.value.find((d) => d.slug === slug))
+		.filter((d) => d?.insight)
+		.map((d) => ({ ...d!, insight: d!.insight!, bars: BARS.has(d!.slug) })),
+);
+
+const rowsOf = (slug: string) => data.value.find((d) => d.slug === slug)?.stats?.rows ?? 0;
+const stats = computed(() => [
+	{ label: "Datasets", value: data.value.length },
+	{ label: "Rows", value: formatCompact(data.value.reduce((s, d) => s + (d.stats?.rows ?? 0), 0)) },
+	{ label: "DeFi protocols", value: formatCompact(rowsOf("defi-protocols")) },
+	{ label: "Yield pools", value: formatCompact(rowsOf("yield-pools")) },
+	{ label: "History since", value: "2011" },
+]);
 
 const query = ref("");
 const active = ref("");
 const tabs = computed(() => [
 	{ id: "", label: "all", count: data.value.length },
-	...["crypto", "blockchain"].map((c) => ({ id: c, label: c, count: data.value.filter((d) => d.category === c).length })),
+	...(Object.keys(TOPICS) as Topic[]).map((t) => ({ id: t, label: TOPICS[t].toLowerCase(), count: data.value.filter((d) => d.topic === t).length })),
 ]);
 const shown = computed(() => {
 	const q = query.value.trim().toLowerCase();
-	return data.value.filter((d) => (!active.value || d.category === active.value) && (!q || `${d.title} ${d.description}`.toLowerCase().includes(q)));
+	return data.value.filter((d) => (!active.value || d.topic === active.value) && (!q || `${d.title} ${d.description}`.toLowerCase().includes(q)));
+});
+// Grouped by topic when browsing everything, one flat grid when filtering.
+const groups = computed(() => {
+	if (active.value || query.value.trim()) return shown.value.length ? [{ id: "" as Topic, label: "", items: shown.value }] : [];
+	return (Object.keys(TOPICS) as Topic[]).map((t) => ({ id: t, label: TOPICS[t], items: shown.value.filter((d) => d.topic === t) })).filter((g) => g.items.length);
 });
 const scrollToList = () => document.getElementById("datasets")?.scrollIntoView({ behavior: "smooth" });
+const pick = (t: Topic) => {
+	active.value = t;
+	scrollToList();
+};
 
-const money = (v: number) => "$" + formatCompact(v);
-const ticker = computed(() => [
-	...data.value.filter((d) => d.insight).map((d) => ({ label: d.insight!.figure.label, value: money(d.insight!.figure.value) })),
-	{ label: "Rows available", value: formatCompact(data.value.reduce((s, d) => s + (d.stats?.rows ?? 0), 0)) },
-	{ label: "Formats", value: "CSV, Parquet" },
-	{ label: "Refresh", value: "daily 01:15 UTC" },
-]);
+const peek = ref("defi-protocols");
+const { data: preview } = await useFetch(() => `/api/datasets/${peek.value}`, { lazy: true, server: false });
+const previewCols = computed(() => (preview.value?.columns ?? []).map((c) => c.name).filter((c) => c !== "source" && c !== "pool_id" && c !== "contract"));
+const cell = (v: unknown) => (typeof v === "number" ? (Number.isInteger(v) ? formatNumber(v) : v.toFixed(2)) : (v ?? ""));
+
+const figure = (f: { value: number; unit: string }) => (f.unit === "usd" ? "$" + formatCompact(f.value) : f.unit === "pct" ? f.value.toFixed(2) + "%" : formatNumber(f.value));
+const ago = (iso: string) => {
+	const h = Math.round((Date.now() - new Date(iso).getTime()) / 36e5);
+	return h < 1 ? "just now" : h < 24 ? `${h}h ago` : `${Math.round(h / 24)}d ago`;
+};
 
 const code = `import pandas as pd
 

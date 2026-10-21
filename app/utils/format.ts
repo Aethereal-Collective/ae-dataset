@@ -4,6 +4,5 @@ export const formatNumber = (n: number) => n.toLocaleString("en-US");
 
 export const formatDate = (iso: string) => new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 
-export const CATEGORY_LABEL: Record<string, string> = { crypto: "Crypto", blockchain: "Blockchain", stocks: "Stocks" };
 
 export const formatCompact = (n: number) => new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 }).format(n);

@@ -110,8 +110,154 @@ async function cryptoHacks(): Promise<Row[]> {
 		.sort((a, b) => b.date.localeCompare(a.date));
 }
 
+const pct = (now: number | undefined, before: number | undefined) => (now && before ? Math.round((now / before - 1) * 10000) / 100 : null);
+const round2 = (n: number | null | undefined) => (n == null ? null : Math.round(n * 100) / 100);
+
+async function stablecoinMarketCapHistory(): Promise<Row[]> {
+	const points = await getJson<{ date: string; totalCirculating: { peggedUSD?: number } }[]>("https://stablecoins.llama.fi/stablecoincharts/all");
+	return points.filter((p) => p.totalCirculating.peggedUSD).map((p) => ({ date: day(Number(p.date)), circulating_usd: Math.round(p.totalCirculating.peggedUSD!) }));
+}
+
+interface Stable {
+	name: string;
+	symbol: string;
+	pegType: string;
+	pegMechanism: string;
+	price: number | null;
+	chains: string[];
+	circulating: { peggedUSD?: number };
+	circulatingPrevDay: { peggedUSD?: number };
+	circulatingPrevWeek: { peggedUSD?: number };
+	circulatingPrevMonth: { peggedUSD?: number };
+}
+
+async function stablecoinMarket(): Promise<Row[]> {
+	const { peggedAssets } = await getJson<{ peggedAssets: Stable[] }>("https://stablecoins.llama.fi/stablecoins?includePrices=true");
+	return peggedAssets
+		.filter((s) => s.pegType === "peggedUSD" && (s.circulating.peggedUSD ?? 0) > 0)
+		.map((s) => {
+			const now = s.circulating.peggedUSD;
+			return {
+				name: s.name,
+				symbol: s.symbol,
+				peg_mechanism: s.pegMechanism,
+				circulating_usd: Math.round(now ?? 0),
+				change_1d_pct: pct(now, s.circulatingPrevDay?.peggedUSD),
+				change_7d_pct: pct(now, s.circulatingPrevWeek?.peggedUSD),
+				change_30d_pct: pct(now, s.circulatingPrevMonth?.peggedUSD),
+				chains: s.chains.length,
+				price: s.price == null ? null : Math.round(s.price * 10000) / 10000,
+			};
+		})
+		.sort((a, b) => b.circulating_usd - a.circulating_usd);
+}
+
+interface Protocol {
+	name: string;
+	category: string | null;
+	chains: string[];
+	tvl: number | null;
+	change_1d: number | null;
+	change_7d: number | null;
+	mcap: number | null;
+	listedAt?: number;
+}
+
+async function defiProtocols(): Promise<Row[]> {
+	const protocols = await getJson<Protocol[]>("https://api.llama.fi/protocols");
+	// CEX wallets are in cex-reserves; keep DeFi only.
+	return protocols
+		.filter((p) => (p.tvl ?? 0) > 0 && p.category !== "CEX")
+		.map((p) => ({
+			name: p.name,
+			category: p.category,
+			chains: p.chains.join("; "),
+			tvl_usd: Math.round(p.tvl!),
+			change_1d_pct: round2(p.change_1d),
+			change_7d_pct: round2(p.change_7d),
+			mcap_usd: p.mcap ? Math.round(p.mcap) : null,
+			listed_date: p.listedAt ? day(p.listedAt) : null,
+		}))
+		.sort((a, b) => b.tvl_usd - a.tvl_usd);
+}
+
+interface Pool {
+	pool: string;
+	chain: string;
+	project: string;
+	symbol: string;
+	tvlUsd: number;
+	apy: number | null;
+	apyBase: number | null;
+	apyReward: number | null;
+	apyMean30d: number | null;
+	stablecoin: boolean;
+	ilRisk: string;
+	exposure: string;
+}
+
+async function yieldPools(): Promise<Row[]> {
+	const { data } = await getJson<{ data: Pool[] }>("https://yields.llama.fi/pools");
+	return data
+		.map((p) => ({
+			pool_id: p.pool,
+			chain: p.chain,
+			project: p.project,
+			symbol: p.symbol,
+			tvl_usd: Math.round(p.tvlUsd),
+			apy: round2(p.apy),
+			apy_base: round2(p.apyBase),
+			apy_reward: round2(p.apyReward),
+			apy_mean_30d: round2(p.apyMean30d),
+			stablecoin: p.stablecoin ? "yes" : "no",
+			il_risk: p.ilRisk,
+			exposure: p.exposure,
+		}))
+		.sort((a, b) => b.tvl_usd - a.tvl_usd);
+}
+
+async function dexVolumeHistory(): Promise<Row[]> {
+	const { totalDataChart } = await getJson<{ totalDataChart: [number, number][] }>("https://api.llama.fi/overview/dexs?excludeTotalDataChart=false&excludeTotalDataChartBreakdown=true");
+	return totalDataChart.filter(([, v]) => v > 0).map(([t, v]) => ({ date: day(t), volume_usd: Math.round(v) }));
+}
+
+interface Cex {
+	name: string;
+	cleanAssetsTvl?: number;
+	inflows_24h?: number;
+	inflows_1w?: number;
+	inflows_1m?: number;
+	spotVolume?: number;
+	oi?: number;
+	derivVolume?: number;
+}
+
+async function cexReserves(): Promise<Row[]> {
+	const { cexs } = await getJson<{ cexs: Cex[] }>("https://api.llama.fi/cexs");
+	const usd = (n?: number) => (n == null ? null : Math.round(n));
+	return cexs
+		.filter((c) => (c.cleanAssetsTvl ?? 0) > 0)
+		.map((c) => ({
+			name: c.name,
+			assets_usd: usd(c.cleanAssetsTvl),
+			inflows_24h_usd: usd(c.inflows_24h),
+			inflows_1w_usd: usd(c.inflows_1w),
+			inflows_1m_usd: usd(c.inflows_1m),
+			spot_volume_usd: usd(c.spotVolume),
+			open_interest_usd: usd(c.oi),
+			deriv_volume_usd: usd(c.derivVolume),
+		}))
+		.sort((a, b) => (b.assets_usd ?? 0) - (a.assets_usd ?? 0));
+}
+
 export const COLLECTORS: Record<string, () => Promise<Row[]>> = {
 	"stablecoin-supply-onchain": stablecoinSupply,
 	"chain-tvl-history": chainTvlHistory,
 	"crypto-hacks": cryptoHacks,
+	"stablecoin-market-cap-history": stablecoinMarketCapHistory,
+	"stablecoin-market": stablecoinMarket,
+	"defi-protocols": defiProtocols,
+	"yield-pools": yieldPools,
+	"dex-volume-history": dexVolumeHistory,
+	"cex-reserves": cexReserves,
 };

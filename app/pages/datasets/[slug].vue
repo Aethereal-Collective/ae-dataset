@@ -3,7 +3,7 @@
 		<nav class="text-sm text-neutral-400" aria-label="Breadcrumb">
 			<NuxtLink to="/" class="hover:text-white">Datasets</NuxtLink>
 			<span class="mx-2">/</span>
-			<span>{{ CATEGORY_LABEL[d.category] }}</span>
+			<span>{{ TOPICS[d.topic] }}</span>
 		</nav>
 
 		<header class="mt-5 grid gap-8 lg:grid-cols-[1fr_320px]">
@@ -15,7 +15,7 @@
 			<aside class="flex flex-col gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-5 text-sm">
 				<template v-if="d.stats">
 					<a :href="`/files/${d.slug}.csv`" class="flex items-center justify-between rounded-2xl bg-accent px-4 py-3 font-semibold text-neutral-950 hover:brightness-110">
-						<span><Icon name="ph:download-simple" class="mr-2 align-[-2px]" />Download CSV</span><span class="text-neutral-400">{{ formatBytes(d.stats.csvBytes) }}</span>
+						<span><Icon name="ph:download-simple" class="mr-2 align-[-2px]" />Download CSV</span><span class="text-neutral-700">{{ formatBytes(d.stats.csvBytes) }}</span>
 					</a>
 					<a :href="`/files/${d.slug}.parquet`" class="flex items-center justify-between rounded-2xl border border-white/15 px-4 py-3 font-semibold hover:bg-white/5">
 						<span><Icon name="ph:download-simple" class="mr-2 align-[-2px]" />Download Parquet</span><span class="text-neutral-400">{{ formatBytes(d.stats.parquetBytes) }}</span>
@@ -73,6 +73,7 @@
 </template>
 
 <script setup lang="ts">
+import { TOPICS } from "#shared/datasets";
 const route = useRoute();
 const { data: d } = await useFetch(`/api/datasets/${route.params.slug}`);
 if (!d.value) throw createError({ statusCode: 404, statusMessage: "Dataset not found", fatal: true });
