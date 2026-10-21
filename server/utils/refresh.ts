@@ -1,5 +1,6 @@
 import { DATASETS } from "../../shared/datasets";
 import { COLLECTORS } from "./collectors";
+import { pingIndexNow } from "./indexnow";
 import { readStats, saveDataset } from "./store";
 
 let running: Promise<Record<string, string>> | null = null;
@@ -22,6 +23,7 @@ export function refreshDatasets(onlyMissing = false) {
 			}
 		}
 		console.log("[datasets] refresh", result);
+		await pingIndexNow(useRuntimeConfig().public.siteUrl);
 		return result;
 	})().finally(() => (running = null));
 	return running;

@@ -39,6 +39,16 @@
 		</section>
 
 		<section class="mt-14">
+			<h2 class="text-2xl font-extrabold tracking-tight">Questions about this dataset</h2>
+			<div class="mt-4 divide-y divide-white/10 border-y border-white/10">
+				<div v-for="f in faq" :key="f.q" class="py-4">
+					<h3 class="font-semibold">{{ f.q }}</h3>
+					<p class="mt-1.5 leading-relaxed text-neutral-400">{{ f.a }}</p>
+				</div>
+			</div>
+		</section>
+
+		<section class="mt-14">
 			<h2 class="text-2xl font-extrabold tracking-tight">How to cite</h2>
 			<p class="mt-4 rounded-xl border border-white/10 bg-black p-5 font-mono text-sm leading-relaxed text-neutral-300">{{ citation }}</p>
 		</section>
@@ -113,6 +123,18 @@ const factLine = computed(() => {
 	const range = s.firstDate ? ` covering ${s.firstDate} to ${s.lastDate}` : "";
 	return `${d.value!.title} is a free dataset by Aethereal with ${formatNumber(s.rows)} rows and ${d.value!.columns.length} columns${range}, updated daily at 01:15 UTC and available as CSV and Parquet at ${url}.`;
 });
+// Direct answers to the questions people ask about a dataset; also FAQPage schema.
+const faq = computed(() => {
+	const x = d.value!;
+	const s = x.stats;
+	const range = s?.firstDate ? ` It covers ${s.firstDate} to ${s.lastDate}.` : "";
+	return [
+		{ q: `What is in the ${x.title} dataset?`, a: `${x.description} It has ${x.columns.length} columns: ${x.columns.map((c) => c.name).join(", ")}.` },
+		{ q: `How often is ${x.title} updated?`, a: `Daily at 01:15 UTC.${s ? ` It currently has ${formatNumber(s.rows)} rows and was last updated on ${s.updatedAt.slice(0, 10)}.` : ""}${range}` },
+		{ q: `How do I download ${x.title}?`, a: `Download it for free, without an account, as CSV from ${site}/files/${x.slug}.csv or as Parquet from ${site}/files/${x.slug}.parquet. AI assistants can also query it through the MCP server at ${site}/mcp.` },
+		{ q: `Can I use ${x.title} in my project?`, a: `License: ${x.license}` },
+	];
+});
 const citation = computed(() => `Aethereal (${new Date().getUTCFullYear()}). ${d.value!.title} [Data set]. Aethereal Data. ${url}. Accessed ${(d.value!.stats?.updatedAt ?? new Date().toISOString()).slice(0, 10)}.`);
 useSeoMeta({
 	title: `${d.value.title} Dataset (CSV, Parquet)`,
@@ -148,6 +170,7 @@ useHead({
 					{ "@type": "DataDownload", encodingFormat: "application/vnd.apache.parquet", contentUrl: `${site}/files/${d.value.slug}.parquet` },
 				],
 				},
+				{ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.value.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) },
 				{
 					"@context": "https://schema.org",
 					"@type": "BreadcrumbList",
