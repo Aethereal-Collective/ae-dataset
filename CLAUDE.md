@@ -1,6 +1,6 @@
 # Aethereal Data
 
-Dataset hub (Kaggle-style, datasets only) for crypto, blockchain, and stocks at data.aethereal.top. Nuxt 4 + Tailwind 4, deployed with Dokploy (Dockerfile). Sister site of aethereal.top; keep the same visual style (Plus Jakarta Sans, white, chrome-text gradient).
+Dataset hub (Kaggle-style, datasets only) for crypto, blockchain, and stocks at dataset.aethereal.top. Nuxt 4 + Tailwind 4, deployed with Dokploy (Dockerfile). Sister site of aethereal.top; keep the same visual style (Plus Jakarta Sans, white, chrome-text gradient).
 
 ## Conventions
 - Registry in `shared/datasets.ts` is the single source of truth; collectors in `server/utils/collectors.ts` must return exactly the registry's columns (refresh rejects unknown columns).

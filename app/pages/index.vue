@@ -28,7 +28,10 @@
 						<span class="ml-3 font-mono text-[11px] text-neutral-500">overview</span>
 						<span class="ml-auto font-mono text-[11px] text-accent">● live</span>
 					</div>
-					<div class="grid grid-cols-2 gap-px bg-white/10">
+					<div v-if="panels.length < 3" class="grid h-72 place-items-center p-6 text-center font-mono text-sm text-neutral-500">
+						<p><span class="text-accent">●</span> building datasets, {{ builtCount }} of {{ data.length }} ready.<br />The first run takes about 20 minutes.</p>
+					</div>
+					<div v-else class="grid grid-cols-2 gap-px bg-white/10">
 						<NuxtLink v-for="(p, i) in panels" :key="p.slug" :to="`/datasets/${p.slug}`" :class="i === 0 ? 'col-span-2' : ''" class="group bg-neutral-950 p-4 hover:bg-neutral-900">
 							<p class="truncate font-mono text-[11px] text-neutral-500">{{ p.insight.figure.label }}</p>
 							<p class="mt-1 text-xl font-semibold tracking-tight md:text-2xl">{{ figure(p.insight.figure) }}</p>
@@ -232,6 +235,7 @@ const BARS = new Set([
 ]);
 
 const PANELS = ["global-indices", "bitcoin-network-daily", "us-rates-daily"];
+const builtCount = computed(() => data.value.filter((d) => d.stats).length);
 const panels = computed(() =>
 	PANELS.map((slug) => data.value.find((d) => d.slug === slug))
 		.filter((d) => d?.insight)
@@ -243,7 +247,7 @@ const stats = computed(() => [
 	{ label: "Datasets", value: data.value.length },
 	{ label: "Rows", value: formatCompact(data.value.reduce((s, d) => s + (d.stats?.rows ?? 0), 0)) },
 	{ label: "Topics", value: Object.keys(TOPICS).length },
-	{ label: "Stocks", value: (insightOf("idx-stock-prices") + insightOf("sp500-stock-prices")).toLocaleString("en-US") },
+	{ label: "Stocks", value: insightOf("idx-stock-prices") + insightOf("sp500-stock-prices") || "-" },
 	{ label: "History since", value: "1954" },
 ]);
 
@@ -287,7 +291,7 @@ const MCP_TOOLS = ["list_datasets", "describe_dataset", "query_dataset", "aggreg
 
 const code = `import pandas as pd
 
-url = "https://data.aethereal.top/files/hacks-enriched.csv"
+url = "https://dataset.aethereal.top/files/hacks-enriched.csv"
 hacks = pd.read_csv(url, parse_dates=["date"])
 
 hacks.groupby("vector")["amount_usd_real"].sum()`;

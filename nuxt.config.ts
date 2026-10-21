@@ -15,7 +15,7 @@ export default defineNuxtConfig({
 	},
 
 	// Public base URL used in code snippets. Override with NUXT_PUBLIC_SITE_URL.
-	runtimeConfig: { public: { siteUrl: "https://data.aethereal.top" } },
+	runtimeConfig: { public: { siteUrl: "https://dataset.aethereal.top" } },
 
 	nitro: {
 		experimental: { tasks: true },

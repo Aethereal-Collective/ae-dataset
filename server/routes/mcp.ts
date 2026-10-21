@@ -1,6 +1,6 @@
 // Remote MCP server (Streamable HTTP, stateless JSON responses): lets AI assistants list, inspect, and
 // query every dataset. Read-only, no auth. Add it with:
-//   claude mcp add --transport http aethereal-data https://data.aethereal.top/mcp
+//   claude mcp add --transport http aethereal-data https://dataset.aethereal.top/mcp
 import { existsSync } from "node:fs";
 import { asyncBufferFromFile, parquetReadObjects } from "hyparquet";
 import { DATASETS, TOPICS, findDataset, type DatasetMeta } from "../../shared/datasets";
