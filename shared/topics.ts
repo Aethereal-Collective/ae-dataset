@@ -1,11 +1,12 @@
 // Copy for /topics/<topic> pages: the H1 and intro search engines read for "<topic> datasets" queries.
 import type { Topic } from "./datasets";
 
-export const TOPIC_PAGES: Record<Topic, { title: string; description: string; intro: string }> = {
+export const TOPIC_PAGES: Record<Topic, { title: string; description: string; intro: string; linkId?: { to: string; label: string } }> = {
 	stocks: {
 		title: "Stock Market Datasets",
 		description: "Free daily stock price datasets for the Indonesia Stock Exchange (IDX) and the S&P 500, plus model-ready features. CSV and Parquet, updated daily.",
 		intro: "Daily OHLCV for IDX and S&P 500 stocks, the S&P 500 constituent list, and IDX stocks with returns, volatility, RSI, beta to IHSG, and USD prices already computed.",
+		linkId: { to: "/id/data-saham-idx", label: "Data saham IDX dalam Bahasa Indonesia" },
 	},
 	markets: {
 		title: "Market Datasets: Indices, Commodities, FX, Crypto",

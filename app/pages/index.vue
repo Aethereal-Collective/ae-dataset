@@ -185,13 +185,29 @@ claude mcp add --transport http aethereal-data {{ mcpUrl }}
 			</div>
 		</section>
 
+		<section id="faq" class="scroll-mt-14 border-t border-white/10 px-4 py-20">
+			<div class="mx-auto max-w-3xl">
+				<p class="font-mono text-xs text-accent">// faq</p>
+				<h2 class="mt-2 text-3xl font-extrabold tracking-tight">Questions</h2>
+				<div class="mt-8 divide-y divide-white/10 border-y border-white/10">
+					<details v-for="f in FAQ" :key="f.q" class="group py-5">
+						<summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold">
+							{{ f.q }}
+							<Icon name="ph:plus" class="shrink-0 text-neutral-500 transition-transform group-open:rotate-45" aria-hidden="true" />
+						</summary>
+						<p class="mt-3 leading-relaxed text-neutral-400">{{ f.a }}</p>
+					</details>
+				</div>
+			</div>
+		</section>
+
 		<section class="px-4 pb-20 pt-4">
 			<div class="grid-bg mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 rounded-xl border border-white/10 p-8 md:flex-row md:items-center md:p-10">
 				<div>
 					<h2 class="text-2xl font-extrabold tracking-tight">Need a dataset we don't have?</h2>
 					<p class="mt-2 text-neutral-400">Tell us what you're analyzing. Popular requests get built first.</p>
 				</div>
-				<a href="mailto:team@aethereal.top?subject=Dataset%20request" class="shrink-0 rounded-lg bg-accent px-5 py-3 font-semibold text-neutral-950 hover:brightness-110">Request a dataset</a>
+				<a href="mailto:aethereal.hq@gmail.com?subject=Dataset%20request" class="shrink-0 rounded-lg bg-accent px-5 py-3 font-semibold text-neutral-950 hover:brightness-110">Request a dataset</a>
 			</div>
 		</section>
 	</div>
@@ -287,6 +303,18 @@ const ago = (iso: string) => {
 };
 
 const mcpUrl = `${useRuntimeConfig().public.siteUrl}/mcp`;
+
+// Plain question-and-answer copy; also emitted as FAQPage schema for search and answer engines.
+const FAQ = [
+	{ q: "Is Aethereal Data free?", a: "Yes. Every dataset is free to download as CSV or Parquet, with no account and no API key. The MCP server for AI assistants is free too." },
+	{ q: "How often is the data updated?", a: "Every dataset is rebuilt daily at 01:15 UTC. Each dataset page shows its last update and the date range it covers." },
+	{ q: "Where can I download historical IDX and IHSG data?", a: "IDX Stock Prices has daily OHLCV for 120 of the most traded Indonesia Stock Exchange stocks, IDX Stock Features adds returns, volatility, RSI, and beta to IHSG, and Global Stock Indices includes the IDX Composite (IHSG) and LQ45." },
+	{ q: "Which crypto datasets are available?", a: "Crypto prices for 30 coins, Bitcoin network data since 2009, stablecoin supply and flows by chain, DeFi protocol TVL, yields, lending markets, fees, DEX volume, exchange reserves, every recorded crypto hack, and labeled phishing domains." },
+	{ q: "What does enriched mean?", a: "Enriched datasets are built by Aethereal by joining several sources and computing new columns, such as technical features, inflation-adjusted losses, or survival labels. The rest are cleaned daily snapshots of public data." },
+	{ q: "Can AI assistants like Claude or ChatGPT query the data?", a: "Yes. Connect any MCP client to https://dataset.aethereal.top/mcp. The assistant can list datasets, read column definitions, filter rows, and run group-by aggregations without downloading files." },
+	{ q: "How do I load a dataset in Python?", a: "Use pandas with the file URL, for example pd.read_csv(\"https://dataset.aethereal.top/files/idx-stock-prices.csv\"), or pd.read_parquet with the .parquet URL for faster loading." },
+	{ q: "Can I use the data commercially?", a: "Each dataset lists its license on its page. Enriched datasets are CC BY 4.0 with attribution to Aethereal. Others are for research and education." },
+];
 const MCP_TOOLS = ["list_datasets", "describe_dataset", "query_dataset", "aggregate_dataset"];
 
 const code = `import pandas as pd
@@ -304,7 +332,17 @@ useHead({
 		{
 			type: "application/ld+json",
 			innerHTML: JSON.stringify([
-				{ "@context": "https://schema.org", "@type": "Organization", name: "Aethereal", url: "https://aethereal.top", logo: `${site}/logo.jpg`, sameAs: ["https://x.com/aethereal_co", "https://github.com/Aethereal-Collective", "https://www.linkedin.com/company/aethereal-collective"] },
+				{
+					"@context": "https://schema.org",
+					"@type": "Organization",
+					name: "Aethereal",
+					alternateName: ["æthereal", "Aethereal Collective"],
+					url: "https://aethereal.top",
+					logo: `${site}/logo.jpg`,
+					email: "aethereal.hq@gmail.com",
+					sameAs: ["https://discord.gg/aethereal", "https://x.com/aethereal_co", "https://github.com/Aethereal-Collective", "https://medium.com/@aethereal_co", "https://www.linkedin.com/company/aethereal-collective"],
+				},
+				{ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: FAQ.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) },
 				{ "@context": "https://schema.org", "@type": "WebSite", name: "Aethereal Data", url: site },
 				{
 					"@context": "https://schema.org",

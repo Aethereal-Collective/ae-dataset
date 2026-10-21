@@ -7,6 +7,7 @@
 		</nav>
 		<h1 class="mt-5 text-4xl font-extrabold tracking-[-0.03em] md:text-5xl">{{ page.title }}</h1>
 		<p class="mt-4 max-w-3xl text-lg leading-relaxed text-neutral-400">{{ page.intro }}</p>
+		<NuxtLink v-if="page.linkId" :to="page.linkId.to" class="mt-3 inline-block font-mono text-sm text-accent hover:underline">{{ page.linkId.label }} →</NuxtLink>
 
 		<div class="mt-10 overflow-hidden rounded-xl border border-white/10">
 			<NuxtLink v-for="d in items" :key="d.slug" :to="`/datasets/${d.slug}`" class="group grid gap-2 border-b border-white/10 px-5 py-5 last:border-b-0 hover:bg-white/[0.03] md:grid-cols-[1fr_auto] md:items-center md:gap-6">

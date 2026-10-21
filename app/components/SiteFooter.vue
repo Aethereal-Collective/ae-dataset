@@ -42,7 +42,7 @@ const SOCIAL = [
 	{ label: "Discord", href: "https://discord.gg/aethereal", icon: "ph:discord-logo" },
 	{ label: "GitHub", href: "https://github.com/Aethereal-Collective", icon: "ph:github-logo" },
 	{ label: "LinkedIn", href: "https://www.linkedin.com/company/aethereal-collective", icon: "ph:linkedin-logo" },
-	{ label: "Email", href: "mailto:team@aethereal.top", icon: "ph:envelope-simple" },
+	{ label: "Email", href: "mailto:aethereal.hq@gmail.com", icon: "ph:envelope-simple" },
 ];
 
 type Link = { label: string; to?: string; href?: string };
@@ -54,7 +54,7 @@ const COLUMNS: { title: string; links: Link[] }[] = [
 			{ label: "All datasets", to: "/#datasets" },
 			{ label: "Python quick start", to: "/#quick-start" },
 			{ label: "MCP for AI assistants", to: "/#mcp" },
-			{ label: "Request a dataset", href: "mailto:team@aethereal.top?subject=Dataset%20request" },
+			{ label: "Request a dataset", href: "mailto:aethereal.hq@gmail.com?subject=Dataset%20request" },
 		],
 	},
 	{
@@ -62,6 +62,7 @@ const COLUMNS: { title: string; links: Link[] }[] = [
 		links: [
 			{ label: "aethereal.top", href: "https://aethereal.top" },
 			{ label: "Research", href: "https://aethereal.top/research" },
+			{ label: "Halt: crypto phishing blocker", href: "https://halt.aethereal.top/en" },
 			{ label: "Products", href: "https://aethereal.top/products" },
 			{ label: "About", href: "https://aethereal.top/about" },
 		],

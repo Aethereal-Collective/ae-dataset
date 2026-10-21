@@ -4,6 +4,7 @@ export default defineEventHandler((event) => {
 	const site = useRuntimeConfig().public.siteUrl;
 	const urls = [
 		{ loc: site, lastmod: undefined as string | undefined },
+		{ loc: `${site}/id/data-saham-idx`, lastmod: undefined as string | undefined },
 		...Object.keys(TOPICS).map((t) => ({ loc: `${site}/topics/${t}`, lastmod: undefined as string | undefined })),
 		...DATASETS.filter(isListed).map((d) => ({ loc: `${site}/datasets/${d.slug}`, lastmod: readStats(d.slug)?.updatedAt.slice(0, 10) })),
 	];

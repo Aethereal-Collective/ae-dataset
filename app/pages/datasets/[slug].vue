@@ -10,6 +10,7 @@
 			<div>
 				<h1 class="text-4xl font-extrabold tracking-[-0.03em] md:text-5xl">{{ d.title }}</h1>
 				<p class="mt-4 max-w-3xl text-lg leading-relaxed text-neutral-400">{{ d.description }}</p>
+				<p v-if="d.stats" class="mt-4 max-w-3xl text-sm leading-relaxed text-neutral-500">{{ factLine }}</p>
 			</div>
 
 			<aside class="flex flex-col gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-5 text-sm">
@@ -35,6 +36,11 @@
 		<section class="mt-14">
 			<h2 class="text-2xl font-extrabold tracking-tight">Load it in Python</h2>
 			<pre class="mt-4 overflow-x-auto rounded-xl border border-white/10 bg-black p-5 font-mono text-sm leading-relaxed text-neutral-100"><code>{{ snippet }}</code></pre>
+		</section>
+
+		<section class="mt-14">
+			<h2 class="text-2xl font-extrabold tracking-tight">How to cite</h2>
+			<p class="mt-4 rounded-xl border border-white/10 bg-black p-5 font-mono text-sm leading-relaxed text-neutral-300">{{ citation }}</p>
 		</section>
 
 		<section class="mt-14">
@@ -101,6 +107,13 @@ const url = `${site}/datasets/${d.value.slug}`;
 const { data: all } = await useFetch("/api/datasets", { default: () => [] });
 const related = computed(() => all.value.filter((x) => x.topic === d.value!.topic && x.slug !== d.value!.slug).slice(0, 6));
 const description = `${d.value.summary} Free CSV and Parquet download, updated daily.`;
+// One self-contained sentence an answer engine can quote as is.
+const factLine = computed(() => {
+	const s = d.value!.stats!;
+	const range = s.firstDate ? ` covering ${s.firstDate} to ${s.lastDate}` : "";
+	return `${d.value!.title} is a free dataset by Aethereal with ${formatNumber(s.rows)} rows and ${d.value!.columns.length} columns${range}, updated daily at 01:15 UTC and available as CSV and Parquet at ${url}.`;
+});
+const citation = computed(() => `Aethereal (${new Date().getUTCFullYear()}). ${d.value!.title} [Data set]. Aethereal Data. ${url}. Accessed ${(d.value!.stats?.updatedAt ?? new Date().toISOString()).slice(0, 10)}.`);
 useSeoMeta({
 	title: `${d.value.title} Dataset (CSV, Parquet)`,
 	description,
@@ -125,6 +138,7 @@ useHead({
 				isAccessibleForFree: true,
 				keywords: [TOPICS[d.value.topic], "dataset", "csv", "parquet", ...d.value.columns.map((c) => c.name)],
 				creator: { "@type": "Organization", name: "Aethereal", url: "https://aethereal.top" },
+				citation: citation.value,
 				dateModified: d.value.stats?.updatedAt,
 				temporalCoverage: d.value.stats?.firstDate ? `${d.value.stats.firstDate}/${d.value.stats.lastDate}` : undefined,
 				includedInDataCatalog: { "@type": "DataCatalog", name: "Aethereal Data", url: site },
