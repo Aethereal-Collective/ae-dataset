@@ -83,36 +83,6 @@ async function chainTvlHistory(): Promise<Row[]> {
 	return rows.sort((a, b) => String(a.date).localeCompare(String(b.date)) || String(a.chain).localeCompare(String(b.chain)));
 }
 
-interface Hack {
-	date: number;
-	name: string;
-	classification: string | null;
-	technique: string | null;
-	amount: number | null;
-	returnedFunds: number | null;
-	chain: string[] | null;
-	bridgeHack: boolean | null;
-	targetType: string | null;
-	source: string | null;
-}
-
-async function cryptoHacks(): Promise<Row[]> {
-	const hacks = await getJson<Hack[]>("https://api.llama.fi/hacks");
-	return hacks
-		.map((h) => ({
-			date: day(h.date),
-			name: h.name,
-			classification: h.classification,
-			technique: h.technique,
-			amount_usd: h.amount,
-			returned_usd: h.returnedFunds,
-			chains: (h.chain ?? []).join("; "),
-			bridge_hack: h.bridgeHack ? "yes" : "no",
-			target_type: h.targetType,
-			source: h.source,
-		}))
-		.sort((a, b) => b.date.localeCompare(a.date));
-}
 
 const pct = (now: number | undefined, before: number | undefined) => (now && before ? Math.round((now / before - 1) * 10000) / 100 : null);
 const round2 = (n: number | null | undefined) => (n == null ? null : Math.round(n * 100) / 100);
@@ -257,7 +227,6 @@ async function cexReserves(): Promise<Row[]> {
 export const COLLECTORS: Record<string, () => Promise<Row[]>> = {
 	"stablecoin-supply-onchain": stablecoinSupply,
 	"chain-tvl-history": chainTvlHistory,
-	"crypto-hacks": cryptoHacks,
 	"stablecoin-market-cap-history": stablecoinMarketCapHistory,
 	"stablecoin-market": stablecoinMarket,
 	"defi-protocols": defiProtocols,

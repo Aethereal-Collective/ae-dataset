@@ -7,7 +7,7 @@ export interface Column {
 	type: ColumnType;
 	description: string;
 }
-export const TOPICS = { research: "Research-ready", stocks: "Stocks", markets: "Markets", macro: "Macro", bitcoin: "Bitcoin", networks: "Networks & L2s", stablecoins: "Stablecoins", defi: "DeFi", exchanges: "Exchanges", security: "Security" } as const;
+export const TOPICS = { stocks: "Stocks", markets: "Markets", macro: "Macro", bitcoin: "Bitcoin", networks: "Networks & L2s", stablecoins: "Stablecoins", defi: "DeFi", exchanges: "Exchanges", security: "Security" } as const;
 export type Topic = keyof typeof TOPICS;
 
 export interface DatasetMeta {
@@ -25,6 +25,8 @@ export interface DatasetMeta {
 	/** Columns that identify a row in append mode (today's re-run replaces, not duplicates). */
 	key?: string[];
 	columns: Column[];
+	/** Built by Aethereal from several sources with computed columns, not a reshaped feed. */
+	enriched?: boolean;
 }
 
 export const DATASETS: DatasetMeta[] = [
@@ -33,7 +35,8 @@ export const DATASETS: DatasetMeta[] = [
 		title: "Cross-Asset Daily Panel",
 		summary: "BTC, ETH, IHSG, S&P 500, gold, oil, USD/IDR, DXY, VIX, rates, stablecoins, and DeFi TVL aligned on one calendar.",
 		description: "One row per calendar day since 2015 with 14 series side by side: Bitcoin, Ethereum, IHSG, S&P 500, Nasdaq, gold, Brent, USD/IDR, dollar index, VIX, US 10-year yield, fed funds rate, total stablecoin supply, and DeFi TVL. Closed markets carry their last close forward and flags show which markets traded. Daily returns included, so correlations take one line.",
-		topic: "research",
+		topic: "markets",
+		enriched: true,
 		source: { name: "Aethereal (derived from public market and on-chain data)", url: "https://data.aethereal.top" },
 		license: "CC BY 4.0. Free to use with attribution to Aethereal.",
 		schedule: "Daily, 01:15 UTC",
@@ -72,7 +75,8 @@ export const DATASETS: DatasetMeta[] = [
 		title: "IDX Stock Features",
 		summary: "120 IDX stocks with returns, volatility, moving averages, RSI, drawdown, beta to IHSG, liquidity, and USD prices.",
 		description: "Daily model-ready features for 120 of the most traded IDX stocks since 2015: returns over 1, 5 and 20 days, annualized volatility, moving averages, RSI, drawdown from the high, 60-day beta and correlation to IHSG, relative strength versus IHSG, traded value, 20-day average traded value, and the close converted to USD. Every feature uses only data up to its own date.",
-		topic: "research",
+		topic: "stocks",
+		enriched: true,
 		source: { name: "Aethereal (derived from public market and on-chain data)", url: "https://data.aethereal.top" },
 		license: "CC BY 4.0. Free to use with attribution to Aethereal.",
 		schedule: "Daily, 01:15 UTC",
@@ -104,7 +108,8 @@ export const DATASETS: DatasetMeta[] = [
 		title: "Crypto Features",
 		summary: "30 coins with returns, volatility, moving averages, RSI, drawdown, and beta and correlation to Bitcoin.",
 		description: "Daily model-ready features for 30 major cryptocurrencies since 2017: returns over 1, 5 and 20 days, annualized volatility, moving averages, RSI, drawdown from the high, 60-day beta and correlation to Bitcoin, and relative strength versus Bitcoin. Every feature uses only data up to its own date.",
-		topic: "research",
+		topic: "markets",
+		enriched: true,
 		source: { name: "Aethereal (derived from public market and on-chain data)", url: "https://data.aethereal.top" },
 		license: "CC BY 4.0. Free to use with attribution to Aethereal.",
 		schedule: "Daily, 01:15 UTC",
@@ -134,7 +139,8 @@ export const DATASETS: DatasetMeta[] = [
 		title: "DeFi Protocol Survival",
 		summary: "Every DeFi protocol labeled active, dead, rugged, deprecated, or website down, with lifetime and risk features.",
 		description: "One row per DeFi protocol ever tracked, labeled by current status (active, website_down, deprecated, dead, rugged), with listing date, death date, lifetime in days, TVL, number of audits, whether it has a token, a GitHub, oracles, and a parent protocol. Built for survival analysis and protocol risk models.",
-		topic: "research",
+		topic: "defi",
+		enriched: true,
 		source: { name: "Aethereal (derived from public market and on-chain data)", url: "https://data.aethereal.top" },
 		license: "CC BY 4.0. Free to use with attribution to Aethereal.",
 		schedule: "Daily, 01:15 UTC",
@@ -162,7 +168,8 @@ export const DATASETS: DatasetMeta[] = [
 		title: "Crypto Hacks Enriched",
 		summary: "Every hack with inflation-adjusted loss, recovery rate, attack vector, and what happened to the protocol after.",
 		description: "Every recorded crypto hack with the loss restated in today's dollars using US CPI, net loss after returned funds, recovery rate, a four-way attack vector (code, keys_and_infra, people, insider), chain count, the protocol's category, and its status today.",
-		topic: "research",
+		topic: "security",
+		enriched: true,
 		source: { name: "Aethereal (derived from public market and on-chain data)", url: "https://data.aethereal.top" },
 		license: "CC BY 4.0. Free to use with attribution to Aethereal.",
 		schedule: "Daily, 01:15 UTC",
@@ -193,7 +200,8 @@ export const DATASETS: DatasetMeta[] = [
 		title: "Stablecoin Flows by Chain",
 		summary: "Daily stablecoin supply and net inflows over 1, 7, and 30 days for the 15 largest chains.",
 		description: "Daily USD stablecoin supply on the 15 chains with the most stablecoins since 2021, with net minted or bridged in over 1, 7 and 30 days and each chain's share of all stablecoins. Shows where dollar liquidity is moving.",
-		topic: "research",
+		topic: "stablecoins",
+		enriched: true,
 		source: { name: "Aethereal (derived from public market and on-chain data)", url: "https://data.aethereal.top" },
 		license: "CC BY 4.0. Free to use with attribution to Aethereal.",
 		schedule: "Daily, 01:15 UTC",
@@ -213,7 +221,8 @@ export const DATASETS: DatasetMeta[] = [
 		title: "Crypto Phishing Domains",
 		summary: "Over 100,000 crypto phishing and legitimate domains, labeled, with lexical features and lookalike distance to real brands.",
 		description: "Crypto phishing domains and legitimate protocol domains with a label and features for classifiers: TLD, length, subdomains, hyphens, digits, character entropy, punycode, the nearest real brand, edit distance to it, and whether a brand name is embedded. Built from the threat data behind Halt.",
-		topic: "research",
+		topic: "security",
+		enriched: true,
 		source: { name: "Aethereal (derived from public market and on-chain data)", url: "https://data.aethereal.top" },
 		license: "CC BY 4.0. Free to use with attribution to Aethereal.",
 		schedule: "Daily, 01:15 UTC",
@@ -269,30 +278,6 @@ export const DATASETS: DatasetMeta[] = [
 			{ name: "date", type: "date", description: "Day (UTC)." },
 			{ name: "chain", type: "string", description: "Chain name." },
 			{ name: "tvl_usd", type: "number", description: "Total value locked in USD." },
-		],
-	},
-	{
-		slug: "crypto-hacks",
-		title: "Crypto Hacks",
-		summary: "Every recorded crypto hack and exploit: date, protocol, technique, amount lost, chains.",
-		description:
-			"Recorded crypto hacks and exploits, from the earliest incidents to today, with the attack classification, technique, amount lost in USD, affected chains, and funds returned.",
-		topic: "security",
-		source: { name: "DefiLlama", url: "https://defillama.com/hacks" },
-		license: "Free for research and education.",
-		schedule: "Daily, 01:15 UTC",
-		mode: "replace",
-		columns: [
-			{ name: "date", type: "date", description: "Date of the incident (UTC)." },
-			{ name: "name", type: "string", description: "Protocol or project name." },
-			{ name: "classification", type: "string", description: "Attack category (e.g. Key Compromise, Oracle Manipulation)." },
-			{ name: "technique", type: "string", description: "Specific technique used." },
-			{ name: "amount_usd", type: "number", description: "Amount lost in USD." },
-			{ name: "returned_usd", type: "number", description: "Funds returned in USD, when known." },
-			{ name: "chains", type: "string", description: "Affected chains, separated by '; '." },
-			{ name: "bridge_hack", type: "string", description: "'yes' if a bridge was hacked." },
-			{ name: "target_type", type: "string", description: "What was targeted (e.g. DeFi Protocol, CEX)." },
-			{ name: "source", type: "string", description: "Link to the incident report." },
 		],
 	},
 	{

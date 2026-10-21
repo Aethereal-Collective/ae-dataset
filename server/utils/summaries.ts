@@ -47,12 +47,6 @@ const SUMMARIES: Record<string, (rows: Row[]) => Summary> = {
 		const daily = sumBy(rows, (r) => String(r.date), "tvl_usd").slice(-365);
 		return { spark: daily.map(([, v]) => v), figure: { label: "TVL, top 25 chains", value: daily.at(-1)?.[1] ?? 0, unit: "usd" } };
 	},
-	"crypto-hacks": (rows) => {
-		const monthly = sumBy(rows, (r) => String(r.date).slice(0, 7), "amount_usd").slice(-24);
-		const year = new Date().getUTCFullYear().toString();
-		const lost = rows.filter((r) => String(r.date).startsWith(year)).reduce((s, r) => s + Number(r.amount_usd ?? 0), 0);
-		return { spark: monthly.map(([, v]) => v), figure: { label: `Lost to hacks in ${year}`, value: lost, unit: "usd" } };
-	},
 	"stablecoin-market-cap-history": (rows) => {
 		const last = rows.slice(-365);
 		return { spark: last.map((r) => Number(r.circulating_usd)), figure: { label: "USD stablecoins in circulation", value: Number(last.at(-1)?.circulating_usd ?? 0), unit: "usd" } };

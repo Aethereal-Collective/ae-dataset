@@ -74,6 +74,7 @@
 							<div class="grid-bg relative h-32 border-b border-white/10 px-4 pt-6" :style="{ color: TOPIC_COLOR[d.topic], backgroundColor: `color-mix(in srgb, ${TOPIC_COLOR[d.topic]} 7%, transparent)` }">
 								<Sparkline v-if="d.insight && d.insight.spark.length > 2" :points="d.insight.spark" :bars="BARS.has(d.slug)" />
 								<p v-else class="font-mono text-[11px] text-neutral-500">collecting history</p>
+								<span v-if="d.enriched" class="absolute left-3 top-3 rounded bg-accent px-1.5 py-0.5 font-mono text-[10px] font-semibold text-neutral-950">enriched</span>
 								<span class="absolute right-3 top-3 rounded bg-black/60 px-1.5 py-0.5 font-mono text-[10px] text-neutral-300">{{ d.mode === "append" ? "history" : d.columns.some((c) => c.name === "date") ? "time series" : "snapshot" }}</span>
 							</div>
 							<div class="p-4">
@@ -169,7 +170,6 @@ import { TOPICS, type Topic } from "#shared/datasets";
 const { data } = await useFetch("/api/datasets", { default: () => [] });
 
 const TOPIC_COLOR: Record<Topic, string> = {
-	research: "#f5f5f5",
 	stocks: "#34d399",
 	markets: "#60a5fa",
 	macro: "#e879f9",
@@ -183,7 +183,6 @@ const TOPIC_COLOR: Record<Topic, string> = {
 // Monthly or ranked series read better as bars.
 const BARS = new Set([
 	"stablecoin-supply-onchain",
-	"crypto-hacks",
 	"dex-volume-history",
 	"stablecoin-market",
 	"defi-protocols",
@@ -252,10 +251,10 @@ const ago = (iso: string) => {
 
 const code = `import pandas as pd
 
-url = "https://data.aethereal.top/files/crypto-hacks.csv"
+url = "https://data.aethereal.top/files/hacks-enriched.csv"
 hacks = pd.read_csv(url, parse_dates=["date"])
 
-hacks.groupby(hacks.date.dt.year)["amount_usd"].sum().tail()`;
+hacks.groupby("vector")["amount_usd_real"].sum()`;
 
 useSeoMeta({ title: "" });
 </script>
