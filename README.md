@@ -31,3 +31,11 @@ Force a rebuild in dev: open `http://localhost:3000/_nitro/tasks/datasets:refres
 - Build type: Dockerfile. Port 3000.
 - Mount a volume at `/app/.data` (keeps dataset history across deploys).
 - Domain: `data.aethereal.top`.
+
+## MCP
+
+`POST /mcp` is a read-only remote MCP server (Streamable HTTP, stateless JSON) with `list_datasets`, `describe_dataset`, `query_dataset`, and `aggregate_dataset`. Query logic lives in `shared/query.ts`.
+
+```bash
+claude mcp add --transport http aethereal-data https://data.aethereal.top/mcp
+```

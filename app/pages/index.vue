@@ -135,7 +135,7 @@
 			</div>
 		</section>
 
-		<section class="border-t border-white/10 px-4 py-20">
+		<section id="quick-start" class="scroll-mt-14 border-t border-white/10 px-4 py-20">
 			<div class="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2">
 				<div>
 					<p class="font-mono text-xs text-accent">// quick start</p>
@@ -152,7 +152,36 @@
 			</div>
 		</section>
 
-		<section class="px-4 pb-20">
+		<section id="mcp" class="scroll-mt-14 border-t border-white/10 px-4 py-20">
+			<div class="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2">
+				<div class="overflow-hidden rounded-xl border border-white/10 bg-black lg:order-2">
+					<div class="flex items-center gap-1.5 border-b border-white/10 px-4 py-3" aria-hidden="true">
+						<span class="size-2.5 rounded-full bg-white/15" /><span class="size-2.5 rounded-full bg-white/15" /><span class="size-2.5 rounded-full bg-white/15" />
+						<span class="ml-3 font-mono text-[11px] text-neutral-500">terminal</span>
+					</div>
+					<pre class="overflow-x-auto p-5 font-mono text-sm leading-relaxed text-neutral-200"><code><span class="text-neutral-500"># Claude Code</span>
+claude mcp add --transport http aethereal-data {{ mcpUrl }}
+
+<span class="text-neutral-500"># Cursor, Claude Desktop, or any MCP client</span>
+{ "aethereal-data": { "url": "{{ mcpUrl }}" } }</code></pre>
+					<div class="border-t border-white/10 p-5 font-mono text-xs leading-relaxed">
+						<p class="text-neutral-500">you</p>
+						<p class="text-neutral-200">Which attack vector cost DeFi the most since 2020, in today's dollars?</p>
+						<p class="mt-3 text-neutral-500">assistant → aggregate_dataset(hacks-enriched, group_by: vector)</p>
+					</div>
+				</div>
+				<div>
+					<p class="font-mono text-xs text-accent">// mcp</p>
+					<h2 class="mt-2 text-3xl font-extrabold tracking-tight">Ask your AI. It queries the data.</h2>
+					<p class="mt-4 max-w-md text-neutral-400">Connect Claude, Cursor, or any MCP client to every dataset here. It can list datasets, read the columns, filter rows, and run group-by aggregations on millions of rows without downloading a file.</p>
+					<ul class="mt-6 space-y-2 font-mono text-sm text-neutral-300">
+						<li v-for="t in MCP_TOOLS" :key="t"><span class="text-accent">→</span> {{ t }}</li>
+					</ul>
+				</div>
+			</div>
+		</section>
+
+		<section class="px-4 pb-20 pt-4">
 			<div class="grid-bg mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 rounded-xl border border-white/10 p-8 md:flex-row md:items-center md:p-10">
 				<div>
 					<h2 class="text-2xl font-extrabold tracking-tight">Need a dataset we don't have?</h2>
@@ -218,7 +247,10 @@ const stats = computed(() => [
 ]);
 
 const query = ref("");
-const active = ref("");
+const route = useRoute();
+const active = ref(String(route.query.topic ?? ""));
+// Footer topic links land here with ?topic=.
+watch(() => route.query.topic, (t) => (active.value = String(t ?? "")));
 const tabs = computed(() => [
 	{ id: "", label: "all", count: data.value.length },
 	...(Object.keys(TOPICS) as Topic[]).map((t) => ({ id: t, label: TOPICS[t].toLowerCase(), count: data.value.filter((d) => d.topic === t).length })),
@@ -248,6 +280,9 @@ const ago = (iso: string) => {
 	const h = Math.round((Date.now() - new Date(iso).getTime()) / 36e5);
 	return h < 1 ? "just now" : h < 24 ? `${h}h ago` : `${Math.round(h / 24)}d ago`;
 };
+
+const mcpUrl = `${useRuntimeConfig().public.siteUrl}/mcp`;
+const MCP_TOOLS = ["list_datasets", "describe_dataset", "query_dataset", "aggregate_dataset"];
 
 const code = `import pandas as pd
 
