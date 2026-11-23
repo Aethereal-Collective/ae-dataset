@@ -143,7 +143,7 @@
 			</div>
 		</section>
 
-		<section id="quick-start" class="scroll-mt-14 border-t border-white/10 px-4 py-20">
+		<section id="quick-start" class="cv-auto scroll-mt-14 border-t border-white/10 px-4 py-20">
 			<div class="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2">
 				<div>
 					<p class="font-mono text-xs text-accent">// quick start</p>
@@ -160,7 +160,7 @@
 			</div>
 		</section>
 
-		<section id="mcp" class="scroll-mt-14 border-t border-white/10 px-4 py-20">
+		<section id="mcp" class="cv-auto scroll-mt-14 border-t border-white/10 px-4 py-20">
 			<div class="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2">
 				<div class="overflow-hidden rounded-xl border border-white/10 bg-black lg:order-2">
 					<div class="flex items-center gap-1.5 border-b border-white/10 px-4 py-3" aria-hidden="true">
@@ -189,7 +189,7 @@ claude mcp add --transport http aethereal-data {{ mcpUrl }}
 			</div>
 		</section>
 
-		<section id="faq" class="scroll-mt-14 border-t border-white/10 px-4 py-20">
+		<section id="faq" class="cv-auto scroll-mt-14 border-t border-white/10 px-4 py-20">
 			<div class="mx-auto max-w-3xl">
 				<p class="font-mono text-xs text-accent">// faq</p>
 				<h2 class="mt-2 text-3xl font-extrabold tracking-tight">Questions</h2>

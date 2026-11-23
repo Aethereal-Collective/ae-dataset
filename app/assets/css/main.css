@@ -43,3 +43,9 @@ body {
 	html { scroll-behavior: auto; }
 	.draw, .ticker { animation: none; }
 }
+
+/* Defer layout/paint for strictly below-the-fold sections. */
+.cv-auto {
+	content-visibility: auto;
+	contain-intrinsic-size: auto none auto 560px;
+}

@@ -31,6 +31,7 @@ export default defineNuxtConfig({
 	},
 
 	nitro: {
+		compressPublicAssets: true,
 		experimental: { tasks: true },
 		// Rebuild datasets daily at 01:15 UTC.
 		scheduledTasks: { "15 1 * * *": ["datasets:refresh"] },

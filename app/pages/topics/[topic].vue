@@ -2,8 +2,8 @@
 	<div class="mx-auto max-w-6xl px-4 pb-24 pt-12 md:pt-16">
 		<nav class="font-mono text-xs text-neutral-500" aria-label="Breadcrumb">
 			<NuxtLink to="/" class="hover:text-white">datasets</NuxtLink>
-			<span class="mx-2">/</span>
-			<span class="text-neutral-300">{{ topic.toLowerCase() }}</span>
+			<span class="mx-2" aria-hidden="true">/</span>
+			<span class="text-neutral-300" aria-current="page">{{ topic.toLowerCase() }}</span>
 		</nav>
 		<h1 class="mt-5 text-4xl font-extrabold tracking-[-0.03em] md:text-5xl">{{ page.title }}</h1>
 		<p class="mt-4 max-w-3xl text-lg leading-relaxed text-neutral-400">{{ page.intro }}</p>
