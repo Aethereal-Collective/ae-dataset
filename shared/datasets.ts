@@ -27,6 +27,12 @@ export interface DatasetMeta {
 	columns: Column[];
 	/** Built by Aethereal from several sources with computed columns, not a reshaped feed. */
 	enriched?: boolean;
+	/** Optional search-optimized <title> override (without site suffix). */
+	seoTitle?: string;
+	/** Optional search-optimized meta description override. */
+	seoDescription?: string;
+	/** Optional extra search keywords for Dataset JSON-LD. */
+	keywords?: string[];
 }
 
 export const DATASETS: DatasetMeta[] = [
@@ -73,6 +79,9 @@ export const DATASETS: DatasetMeta[] = [
 	{
 		slug: "idx-stock-features",
 		title: "IDX Stock Features",
+		seoTitle: "IDX Stock ML Features Dataset — RSI, Beta to IHSG & Volatility (CSV)",
+		seoDescription: "Download free daily machine learning features for 120 Indonesia Stock Exchange (IDX/BEI) stocks since 2015: returns, RSI, moving averages, volatility, and beta to IHSG in CSV & Parquet.",
+		keywords: ["idx stock features", "data saham idx machine learning", "ihsg beta dataset", "indonesian stock technical indicators csv"],
 		summary: "120 IDX stocks with returns, volatility, moving averages, RSI, drawdown, beta to IHSG, liquidity, and USD prices.",
 		description: "Daily model-ready features for 120 of the most traded IDX stocks since 2015: returns over 1, 5 and 20 days, annualized volatility, moving averages, RSI, drawdown from the high, 60-day beta and correlation to IHSG, relative strength versus IHSG, traded value, 20-day average traded value, and the close converted to USD. Every feature uses only data up to its own date.",
 		topic: "stocks",
@@ -106,6 +115,9 @@ export const DATASETS: DatasetMeta[] = [
 	{
 		slug: "crypto-features",
 		title: "Crypto Features",
+		seoTitle: "Crypto Technical Indicators & ML Features Dataset (RSI, Beta — CSV)",
+		seoDescription: "Free daily machine learning & quantitative features for 30 major cryptocurrencies since 2017: returns, realized volatility, SMA, RSI, drawdown, and beta to Bitcoin in CSV & Parquet.",
+		keywords: ["crypto machine learning dataset", "crypto technical indicators csv", "bitcoin beta dataset", "quantitative crypto features"],
 		summary: "30 coins with returns, volatility, moving averages, RSI, drawdown, and beta and correlation to Bitcoin.",
 		description: "Daily model-ready features for 30 major cryptocurrencies since 2017: returns over 1, 5 and 20 days, annualized volatility, moving averages, RSI, drawdown from the high, 60-day beta and correlation to Bitcoin, and relative strength versus Bitcoin. Every feature uses only data up to its own date.",
 		topic: "markets",
@@ -166,6 +178,9 @@ export const DATASETS: DatasetMeta[] = [
 	{
 		slug: "hacks-enriched",
 		title: "Crypto Hacks Enriched",
+		seoTitle: "Crypto & DeFi Hacks Dataset — Losses, Attack Vectors & Recovery (CSV)",
+		seoDescription: "Free comprehensive dataset of every recorded crypto and DeFi hack with CPI inflation-adjusted USD losses, attack vectors, recovery rates, and protocol status. CSV & Parquet.",
+		keywords: ["crypto hacks dataset", "defi exploits csv", "web3 security dataset", "crypto hack losses history"],
 		summary: "Every hack with inflation-adjusted loss, recovery rate, attack vector, and what happened to the protocol after.",
 		description: "Every recorded crypto hack with the loss restated in today's dollars using US CPI, net loss after returned funds, recovery rate, a four-way attack vector (code, keys_and_infra, people, insider), chain count, the protocol's category, and its status today.",
 		topic: "security",
@@ -669,6 +684,9 @@ export const DATASETS: DatasetMeta[] = [
 	{
 		slug: "idx-stock-prices",
 		title: "IDX Stock Prices",
+		seoTitle: "IDX Stock Prices Historical Dataset — 120 BEI Stocks (Free CSV)",
+		seoDescription: "Download free daily historical OHLCV stock prices for 120 most traded Indonesia Stock Exchange (IDX / BEI) stocks including BBCA, BBRI, BMRI, TLKM. Updated daily in CSV & Parquet.",
+		keywords: ["idx stock prices csv", "data historis saham idx", "indonesia stock exchange dataset", "bei historical data csv", "data saham bei gratis"],
 		summary: "Daily OHLCV for 120 of the most traded stocks on the Indonesia Stock Exchange.",
 		description: "Daily open, high, low, close, adjusted close, and volume for 120 of the most traded stocks on Bursa Efek Indonesia (IDX), from each stock's first available day. Prices in IDR. The list is today's most traded names, so stocks that were delisted are not included (survivorship bias in backtests).",
 		topic: "stocks",
@@ -690,6 +708,9 @@ export const DATASETS: DatasetMeta[] = [
 	{
 		slug: "sp500-stock-prices",
 		title: "S&P 500 Stock Prices",
+		seoTitle: "S&P 500 Historical Stock Prices Dataset (Free CSV & Parquet Download)",
+		seoDescription: "Free daily historical OHLCV stock price dataset for every S&P 500 company since 2015. Clean CSV & Parquet ready for pandas, Excel, and backtesting — updated daily, no account needed.",
+		keywords: ["s&p 500 dataset csv", "s&p 500 historical stock prices csv", "sp500 ohlcv download", "free us stock market dataset"],
 		summary: "Daily OHLCV for every current S&P 500 company since 2015.",
 		description: "Daily open, high, low, close, adjusted close, and volume for every current S&P 500 constituent from January 2015. Prices in USD. Only today's constituents are included, so companies that left the index are missing (survivorship bias in backtests).",
 		topic: "stocks",
@@ -711,6 +732,9 @@ export const DATASETS: DatasetMeta[] = [
 	{
 		slug: "sp500-companies",
 		title: "S&P 500 Companies",
+		seoTitle: "List of S&P 500 Companies (Free CSV & Excel Download — Updated Daily)",
+		seoDescription: "Download the complete, up-to-date list of S&P 500 companies in CSV (Excel-ready) and Parquet: stock tickers, GICS sector, sub-industry, headquarters, SEC CIK, and date added.",
+		keywords: ["list of s&p 500 companies excel", "s&p 500 constituents csv", "s&p 500 tickers list csv", "sp500 companies list download"],
 		summary: "Current S&P 500 constituents with sector, industry, headquarters, and date added.",
 		description: "One row per current S&P 500 company: ticker, name, GICS sector and sub-industry, headquarters, date added to the index, SEC CIK, and year founded.",
 		topic: "stocks",
@@ -732,6 +756,9 @@ export const DATASETS: DatasetMeta[] = [
 	{
 		slug: "global-indices",
 		title: "Global Stock Indices",
+		seoTitle: "Global Stock Indices Historical Dataset: S&P 500, IHSG, Nasdaq & VIX",
+		seoDescription: "Free daily historical prices for 31 global stock market indices since 1990, including S&P 500, Nasdaq, IHSG, LQ45, Nikkei, Hang Seng, and VIX. Download as CSV or Parquet.",
+		keywords: ["global stock indices dataset csv", "data historis ihsg csv", "sp500 nasdaq historical csv", "vix historical dataset"],
 		summary: "Daily levels for 31 stock indices: US, Europe, Asia, and Indonesia's IHSG and LQ45.",
 		description: "Daily open, high, low, and close for 31 benchmark stock indices across the Americas, Europe, and Asia Pacific, including IHSG, LQ45, S&P 500, Nasdaq, Nikkei, Hang Seng, and the VIX. From 1990 or each index's first day.",
 		topic: "markets",
@@ -753,6 +780,9 @@ export const DATASETS: DatasetMeta[] = [
 	{
 		slug: "commodity-prices",
 		title: "Commodity Prices",
+		seoTitle: "Historical Commodity Prices Dataset: Gold, Oil, Silver & Futures (CSV)",
+		seoDescription: "Download free daily historical futures prices for 18 commodities since 2000: gold, silver, WTI & Brent crude oil, natural gas, copper, wheat, corn, and coffee in CSV & Parquet.",
+		keywords: ["commodity prices dataset csv", "historical gold oil prices csv", "commodities futures historical data"],
 		summary: "Daily front-month futures prices for metals, energy, and agriculture since 2000.",
 		description: "Daily open, high, low, close, and volume of front-month futures for 18 commodities: gold, silver, platinum, palladium, copper, WTI and Brent crude, natural gas, gasoline, heating oil, corn, wheat, soybeans, coffee, sugar, cocoa, cotton, and live cattle. USD.",
 		topic: "markets",
@@ -774,6 +804,9 @@ export const DATASETS: DatasetMeta[] = [
 	{
 		slug: "fx-rates",
 		title: "FX Rates",
+		seoTitle: "Historical Forex & USD Exchange Rates Dataset (24 Currencies, Free CSV)",
+		seoDescription: "Free daily historical forex exchange rates for 24 currencies against USD since 2000, including USD/IDR, EUR, JPY, GBP, CNY, and SGD. Clean CSV & Parquet updated daily.",
+		keywords: ["forex dataset csv", "forex trading dataset", "fx exchange rates historical csv", "kurs usd idr historis csv"],
 		summary: "Daily US dollar exchange rates against 24 currencies including IDR, since 2000.",
 		description: "Daily open, high, low, and close of the US dollar against 24 currencies, quoted as units of the currency per 1 USD. Includes IDR, EUR, JPY, CNY, SGD, MYR, and other major and emerging currencies.",
 		topic: "markets",
@@ -794,6 +827,9 @@ export const DATASETS: DatasetMeta[] = [
 	{
 		slug: "crypto-prices",
 		title: "Crypto Prices",
+		seoTitle: "Historical Cryptocurrency Prices Dataset (BTC, ETH, SOL — Free CSV)",
+		seoDescription: "Download free daily historical OHLCV cryptocurrency prices in USD for 30 major coins including Bitcoin, Ethereum, Solana, and XRP. Clean CSV & Parquet updated daily.",
+		keywords: ["cryptocurrency dataset csv", "crypto historical prices csv", "bitcoin ethereum ohlcv dataset", "free crypto market data"],
 		summary: "Daily OHLCV for 30 major cryptocurrencies, from each coin's first trading day.",
 		description: "Daily open, high, low, close, and volume in USD for 30 major cryptocurrencies including Bitcoin, Ethereum, Solana, and XRP.",
 		topic: "markets",
@@ -815,6 +851,9 @@ export const DATASETS: DatasetMeta[] = [
 	{
 		slug: "us-rates-daily",
 		title: "US Interest Rates Daily",
+		seoTitle: "US Treasury Yields & Fed Funds Rate Daily Dataset (1954–Present, CSV)",
+		seoDescription: "Free daily US interest rates dataset since 1954 from FRED: effective Federal Funds rate, 3M/2Y/5Y/10Y/30Y Treasury yields, 10Y-2Y yield curve spread, and inflation breakeven in CSV & Parquet.",
+		keywords: ["us treasury yields dataset csv", "fed funds rate historical csv", "us interest rates daily csv", "yield curve spread dataset"],
 		summary: "Fed funds rate, Treasury yields from 3 months to 30 years, curve spread, and inflation breakeven.",
 		description: "Daily US rates: effective federal funds rate, Treasury constant-maturity yields at 3 months, 2, 5, 10, and 30 years, the 10y minus 2y spread, and the 10-year breakeven inflation rate. From 1954 or each series' first day.",
 		topic: "macro",
@@ -837,6 +876,9 @@ export const DATASETS: DatasetMeta[] = [
 	{
 		slug: "us-macro-monthly",
 		title: "US Macro Monthly",
+		seoTitle: "US Macroeconomic Dataset: CPI, Inflation, Unemployment & M2 (Free CSV)",
+		seoDescription: "Download free monthly US economic indicators from FRED in CSV & Parquet: CPI, core CPI, PCE inflation, unemployment rate, nonfarm payrolls, M2 money supply, and retail sales.",
+		keywords: ["us macroeconomic dataset csv", "us cpi inflation historical csv", "unemployment rate dataset csv", "fred macro data csv"],
 		summary: "CPI, core CPI, PCE, unemployment, payrolls, M2, industrial production, retail sales, housing, sentiment.",
 		description: "Monthly US economic indicators: CPI and core CPI (index), PCE price index, unemployment rate, nonfarm payrolls, M2 money supply, industrial production, retail sales, housing starts, and consumer sentiment. Seasonally adjusted where published that way.",
 		topic: "macro",

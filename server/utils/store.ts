@@ -67,7 +67,7 @@ export function saveDataset(meta: DatasetMeta, fresh: Row[]): DatasetStats {
 	if (meta.mode === "append") writeFileSync(path(meta.slug, "json"), JSON.stringify(rows));
 	// Newest first when the dataset has dates, otherwise the collector's order (largest first).
 	const hasDate = names.includes("date");
-	const preview = hasDate ? [...rows].sort((a, b) => String(b.date).localeCompare(String(a.date))).slice(0, PREVIEW_ROWS) : rows.slice(0, PREVIEW_ROWS);
+	const preview = hasDate ? rows.toSorted((a, b) => String(b.date).localeCompare(String(a.date))).slice(0, PREVIEW_ROWS) : rows.slice(0, PREVIEW_ROWS);
 	writeFileSync(path(meta.slug, "preview.json"), JSON.stringify(preview));
 	writeFileSync(path(meta.slug, "csv"), toCsv(names, rows));
 	const parquet = parquetWriteBuffer({

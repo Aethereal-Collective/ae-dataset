@@ -12,6 +12,7 @@ export const TOPIC_PAGES: Record<Topic, { title: string; description: string; in
 		title: "Market Datasets: Indices, Commodities, FX, Crypto",
 		description: "Free datasets for global stock indices including IHSG, commodity futures, US dollar exchange rates including IDR, and crypto prices. CSV and Parquet, updated daily.",
 		intro: "31 stock indices, 18 commodities, 24 currencies against the dollar, 30 cryptocurrencies, and a cross-asset panel that puts them on one calendar.",
+		linkId: { to: "/id/data-crypto-csv", label: "Data crypto & kurs USD/IDR dalam Bahasa Indonesia" },
 	},
 	macro: {
 		title: "Macroeconomic Datasets",

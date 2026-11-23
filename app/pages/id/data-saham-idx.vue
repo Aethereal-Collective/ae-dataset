@@ -22,7 +22,7 @@
 
 		<section class="mt-14">
 			<h2 class="text-2xl font-extrabold tracking-tight">Ambil datanya dengan Python</h2>
-			<pre class="mt-4 overflow-x-auto rounded-xl border border-white/10 bg-black p-5 font-mono text-sm leading-relaxed text-neutral-100"><code>{{ code }}</code></pre>
+			<pre role="region" aria-label="Contoh kode Python untuk data saham IDX" tabindex="0" class="mt-4 overflow-x-auto rounded-xl border border-white/10 bg-black p-5 font-mono text-sm leading-relaxed text-neutral-100"><code>{{ code }}</code></pre>
 		</section>
 
 		<section class="mt-14">
@@ -34,6 +34,12 @@
 				</div>
 			</div>
 		</section>
+
+		<p class="mt-12 text-sm text-neutral-500">
+			Halaman data Indonesia lainnya:
+			<NuxtLink to="/id/data-kurs-usd-idr" class="text-neutral-300 hover:text-accent">Data Kurs USD/IDR</NuxtLink>,
+			<NuxtLink to="/id/data-crypto-csv" class="text-neutral-300 hover:text-accent">Data Historis Crypto &amp; Bitcoin</NuxtLink>.
+		</p>
 	</div>
 </template>
 

@@ -10,11 +10,14 @@
 					</p>
 					<p class="mt-6 max-w-md text-lg text-neutral-400">Stocks, FX, macro, and on-chain crypto data as clean CSV and Parquet. One URL away from your notebook.</p>
 
-					<label class="mt-8 flex max-w-md items-center gap-3 rounded-lg border border-white/15 bg-black/60 px-4 py-3.5 font-mono text-sm focus-within:border-accent">
-						<span class="text-accent" aria-hidden="true">&gt;</span>
-						<input v-model="query" type="search" placeholder="search datasets…" class="w-full bg-transparent outline-none placeholder:text-neutral-600" @keydown.enter="scrollToList" />
-						<kbd class="rounded border border-white/15 px-1.5 text-[10px] text-neutral-500">enter</kbd>
-					</label>
+					<search class="mt-8 block max-w-md">
+						<label class="flex items-center gap-3 rounded-lg border border-white/15 bg-black/60 px-4 py-3.5 font-mono text-sm focus-within:border-accent">
+							<span class="sr-only">Search datasets</span>
+							<span class="text-accent" aria-hidden="true">&gt;</span>
+							<input v-model="query" type="search" placeholder="search datasets…" class="w-full bg-transparent outline-none placeholder:text-neutral-600" @keydown.enter="scrollToList" />
+							<kbd class="rounded border border-white/15 px-1.5 text-[10px] text-neutral-500">enter</kbd>
+						</label>
+					</search>
 					<div class="mt-4 flex flex-wrap gap-2 font-mono text-xs">
 						<button v-for="(label, id) in TOPICS" :key="id" type="button" class="rounded-full border border-white/10 px-3 py-1.5 text-neutral-400 hover:border-white/30 hover:text-white" @click="pick(id)">
 							<span class="mr-1.5 inline-block size-1.5 rounded-full align-middle" :style="{ background: TOPIC_COLOR[id] }" />{{ label }}
@@ -61,7 +64,7 @@
 						<h2 class="mt-2 text-3xl font-extrabold tracking-tight">Datasets</h2>
 					</div>
 					<nav class="flex flex-wrap gap-1 rounded-lg border border-white/10 p-1 font-mono text-xs" aria-label="Filter by topic">
-						<button v-for="tab in tabs" :key="tab.id" type="button" :class="active === tab.id ? 'bg-white text-neutral-950' : 'text-neutral-400 hover:text-white'" class="rounded-md px-3 py-1.5" @click="active = tab.id">
+						<button v-for="tab in tabs" :key="tab.id" type="button" :aria-pressed="active === tab.id" :class="active === tab.id ? 'bg-white text-neutral-950' : 'text-neutral-400 hover:text-white'" class="rounded-md px-3 py-1.5" @click="active = tab.id">
 							{{ tab.label }} {{ tab.count }}
 						</button>
 					</nav>
@@ -108,6 +111,7 @@
 							v-for="d in data"
 							:key="d.slug"
 							type="button"
+							:aria-pressed="peek === d.slug"
 							:class="peek === d.slug ? 'border-accent text-white' : 'border-white/10 text-neutral-400 hover:text-white'"
 							class="border-l-2 px-4 py-3 text-left"
 							@click="peek = d.slug"
@@ -124,7 +128,7 @@
 						<div class="max-h-[420px] overflow-auto">
 							<table v-if="preview?.preview.length" class="w-full whitespace-nowrap text-left font-mono text-xs">
 								<thead class="sticky top-0 bg-neutral-900 text-neutral-400">
-									<tr><th v-for="c in previewCols" :key="c" class="px-3 py-2 font-medium">{{ c }}</th></tr>
+									<tr><th v-for="c in previewCols" :key="c" scope="col" class="px-3 py-2 font-medium">{{ c }}</th></tr>
 								</thead>
 								<tbody class="divide-y divide-white/5 text-neutral-300">
 									<tr v-for="(r, i) in preview.preview.slice(0, 12)" :key="i">
@@ -151,7 +155,7 @@
 						<span class="size-2.5 rounded-full bg-white/15" /><span class="size-2.5 rounded-full bg-white/15" /><span class="size-2.5 rounded-full bg-white/15" />
 						<span class="ml-3 font-mono text-[11px] text-neutral-500">analysis.py</span>
 					</div>
-					<pre class="overflow-x-auto p-5 font-mono text-sm leading-relaxed text-neutral-200"><code>{{ code }}</code></pre>
+					<pre role="region" aria-label="Python quick start code example" tabindex="0" class="overflow-x-auto p-5 font-mono text-sm leading-relaxed text-neutral-200"><code>{{ code }}</code></pre>
 				</div>
 			</div>
 		</section>
@@ -163,7 +167,7 @@
 						<span class="size-2.5 rounded-full bg-white/15" /><span class="size-2.5 rounded-full bg-white/15" /><span class="size-2.5 rounded-full bg-white/15" />
 						<span class="ml-3 font-mono text-[11px] text-neutral-500">terminal</span>
 					</div>
-					<pre class="overflow-x-auto p-5 font-mono text-sm leading-relaxed text-neutral-200"><code><span class="text-neutral-500"># Claude Code</span>
+					<pre role="region" aria-label="MCP client configuration example" tabindex="0" class="overflow-x-auto p-5 font-mono text-sm leading-relaxed text-neutral-200"><code><span class="text-neutral-500"># Claude Code</span>
 claude mcp add --transport http aethereal-data {{ mcpUrl }}
 
 <span class="text-neutral-500"># Cursor, Claude Desktop, or any MCP client</span>
@@ -285,7 +289,10 @@ const groups = computed(() => {
 	if (active.value || query.value.trim()) return shown.value.length ? [{ id: "" as Topic, label: "", items: shown.value }] : [];
 	return (Object.keys(TOPICS) as Topic[]).map((t) => ({ id: t, label: TOPICS[t], items: shown.value.filter((d) => d.topic === t) })).filter((g) => g.items.length);
 });
-const scrollToList = () => document.getElementById("datasets")?.scrollIntoView({ behavior: "smooth" });
+const scrollToList = () => {
+	const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+	document.getElementById("datasets")?.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
+};
 const pick = (t: Topic) => {
 	active.value = t;
 	scrollToList();

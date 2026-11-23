@@ -1,7 +1,7 @@
 <template>
 	<div class="flex min-h-svh flex-col">
 		<SiteNav />
-		<main class="flex-1">
+		<main id="main-content" class="flex-1">
 			<NuxtPage />
 		</main>
 		<SiteFooter />

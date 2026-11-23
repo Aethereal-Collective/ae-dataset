@@ -2,7 +2,7 @@
 	<div v-if="d" class="mx-auto max-w-6xl px-4 pb-24 pt-12 md:pt-16">
 		<nav class="text-sm text-neutral-400" aria-label="Breadcrumb">
 			<NuxtLink to="/" class="hover:text-white">Datasets</NuxtLink>
-			<span class="mx-2">/</span>
+			<span class="mx-2" aria-hidden="true">/</span>
 			<NuxtLink :to="`/topics/${d.topic}`" class="hover:text-white">{{ TOPICS[d.topic] }}</NuxtLink>
 		</nav>
 
@@ -16,10 +16,10 @@
 			<aside class="flex flex-col gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-5 text-sm">
 				<template v-if="d.stats">
 					<a :href="`/files/${d.slug}.csv`" class="flex items-center justify-between rounded-2xl bg-accent px-4 py-3 font-semibold text-neutral-950 hover:brightness-110">
-						<span><Icon name="ph:download-simple" class="mr-2 align-[-2px]" />Download CSV</span><span class="text-neutral-700">{{ formatBytes(d.stats.csvBytes) }}</span>
+						<span><Icon name="ph:download-simple" class="mr-2 align-[-2px]" aria-hidden="true" />Download CSV</span><span class="text-neutral-700">{{ formatBytes(d.stats.csvBytes) }}</span>
 					</a>
 					<a :href="`/files/${d.slug}.parquet`" class="flex items-center justify-between rounded-2xl border border-white/15 px-4 py-3 font-semibold hover:bg-white/5">
-						<span><Icon name="ph:download-simple" class="mr-2 align-[-2px]" />Download Parquet</span><span class="text-neutral-400">{{ formatBytes(d.stats.parquetBytes) }}</span>
+						<span><Icon name="ph:download-simple" class="mr-2 align-[-2px]" aria-hidden="true" />Download Parquet</span><span class="text-neutral-400">{{ formatBytes(d.stats.parquetBytes) }}</span>
 					</a>
 				</template>
 				<p v-else class="rounded-lg bg-white/5 p-4 text-neutral-400">This dataset is being built. Check back in a few minutes.</p>
@@ -35,7 +35,7 @@
 
 		<section class="mt-14">
 			<h2 class="text-2xl font-extrabold tracking-tight">Load it in Python</h2>
-			<pre class="mt-4 overflow-x-auto rounded-xl border border-white/10 bg-black p-5 font-mono text-sm leading-relaxed text-neutral-100"><code>{{ snippet }}</code></pre>
+			<pre role="region" aria-label="Python code example" tabindex="0" class="mt-4 overflow-x-auto rounded-xl border border-white/10 bg-black p-5 font-mono text-sm leading-relaxed text-neutral-100"><code>{{ snippet }}</code></pre>
 		</section>
 
 		<section class="mt-14">
@@ -58,7 +58,7 @@
 			<div class="mt-4 overflow-x-auto rounded-xl border border-white/10">
 				<table class="w-full text-left text-sm">
 					<thead class="bg-white/[0.03] text-neutral-400">
-						<tr><th class="px-4 py-3 font-semibold">Name</th><th class="px-4 py-3 font-semibold">Type</th><th class="px-4 py-3 font-semibold">Description</th></tr>
+						<tr><th scope="col" class="px-4 py-3 font-semibold">Name</th><th scope="col" class="px-4 py-3 font-semibold">Type</th><th scope="col" class="px-4 py-3 font-semibold">Description</th></tr>
 					</thead>
 					<tbody class="divide-y divide-white/5">
 						<tr v-for="c in d.columns" :key="c.name">
@@ -86,7 +86,7 @@
 			<div class="mt-4 overflow-x-auto rounded-xl border border-white/10">
 				<table class="w-full whitespace-nowrap text-left text-sm">
 					<thead class="bg-white/[0.03] text-neutral-400">
-						<tr><th v-for="c in d.columns" :key="c.name" class="px-4 py-3 font-mono font-semibold">{{ c.name }}</th></tr>
+						<tr><th v-for="c in d.columns" :key="c.name" scope="col" class="px-4 py-3 font-mono font-semibold">{{ c.name }}</th></tr>
 					</thead>
 					<tbody class="divide-y divide-white/5">
 						<tr v-for="(row, i) in d.preview" :key="i">
@@ -116,7 +116,8 @@ const site = useRuntimeConfig().public.siteUrl;
 const url = `${site}/datasets/${d.value.slug}`;
 const { data: all } = await useFetch("/api/datasets", { default: () => [] });
 const related = computed(() => all.value.filter((x) => x.topic === d.value!.topic && x.slug !== d.value!.slug).slice(0, 6));
-const description = `${d.value.summary} Free CSV and Parquet download, updated daily.`;
+const description = d.value.seoDescription ?? `${d.value.summary} Free CSV and Parquet download, updated daily.`;
+const pageTitle = d.value.seoTitle ?? `${d.value.title} Dataset (CSV, Parquet)`;
 // One self-contained sentence an answer engine can quote as is.
 const factLine = computed(() => {
 	const s = d.value!.stats!;
@@ -137,9 +138,9 @@ const faq = computed(() => {
 });
 const citation = computed(() => `Aethereal (${new Date().getUTCFullYear()}). ${d.value!.title} [Data set]. Aethereal Data. ${url}. Accessed ${(d.value!.stats?.updatedAt ?? new Date().toISOString()).slice(0, 10)}.`);
 useSeoMeta({
-	title: `${d.value.title} Dataset (CSV, Parquet)`,
+	title: pageTitle,
 	description,
-	ogTitle: `${d.value.title} Dataset`,
+	ogTitle: pageTitle,
 	ogDescription: description,
 	ogUrl: url,
 	robots: d.value.listed ? "index, follow" : "noindex, follow",
@@ -158,7 +159,7 @@ useHead({
 				url,
 				license: d.value.license,
 				isAccessibleForFree: true,
-				keywords: [TOPICS[d.value.topic], "dataset", "csv", "parquet", ...d.value.columns.map((c) => c.name)],
+				keywords: [...(d.value.keywords ?? []), TOPICS[d.value.topic], "dataset", "csv", "parquet", ...d.value.columns.map((c) => c.name)],
 				creator: { "@type": "Organization", name: "Aethereal", url: "https://aethereal.top" },
 				citation: citation.value,
 				dateModified: d.value.stats?.updatedAt,

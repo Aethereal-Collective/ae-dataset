@@ -40,5 +40,6 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+	html { scroll-behavior: auto; }
 	.draw, .ticker { animation: none; }
 }
